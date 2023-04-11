@@ -4,7 +4,7 @@ import ChatRoom from "./components/chatRoom/ChatRoom";
 
 function App() {
   return (
-    <div>
+    <div style={{ height: "100vh" }}>
       <ChatRoom />
     </div>
   );

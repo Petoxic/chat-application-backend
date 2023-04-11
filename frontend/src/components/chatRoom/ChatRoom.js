@@ -8,16 +8,18 @@ const ChatRoom = () => {
   return (
     <ContentContainer>
       <NameWrapper>Worachot</NameWrapper>
+      <ChatContent/>
       <MessageContainer>
         <Input
           placeholder="Enter a message"
           disableUnderline
           sx={{
-            fontSize: "1.5rem",
+            fontSize: "1rem",
             width: "85%",
             backgroundColor: theme.color.white,
             borderRadius: "10px",
             margin: "10px",
+            padding: "5px 7px"
           }}
         />
         <Button sx={{backgroundColor: theme.color.white, margin: "10px"}}>Send</Button>
@@ -37,7 +39,7 @@ const ContentContainer = styled.div`
 
 const NameWrapper = styled.p`
   width: 100%;
-  height: 10%;
+  height: 6%;
   background-color: ${theme.color.primary};
   font-size: 2.25rem;
   margin: 0;
@@ -45,14 +47,14 @@ const NameWrapper = styled.p`
 
 const MessageContainer = styled.div`
   width: 100%;
-  height: 10%;
+  height: 6%;
   background-color: ${theme.color.primary};
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 `;
 
-// const MessageBox = styled.Input`
-//   placeholder: "eiei";
-//   font-size: 1.5rem;
-// `;
+const ChatContent = styled.div`
+  width: 100%;
+  height: 88%;
+`
