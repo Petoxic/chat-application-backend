@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { Input, Button } from "@mui/material";
 
 import theme from "../../utils/theme";
 
@@ -8,7 +9,18 @@ const ChatRoom = () => {
     <ContentContainer>
       <NameWrapper>Worachot</NameWrapper>
       <MessageContainer>
-        <MessageBox />
+        <Input
+          placeholder="Enter a message"
+          disableUnderline
+          sx={{
+            fontSize: "1.5rem",
+            width: "85%",
+            backgroundColor: theme.color.white,
+            borderRadius: "10px",
+            margin: "10px",
+          }}
+        />
+        <Button sx={{backgroundColor: theme.color.white, margin: "10px"}}>Send</Button>
       </MessageContainer>
     </ContentContainer>
   );
@@ -28,16 +40,19 @@ const NameWrapper = styled.p`
   height: 10%;
   background-color: ${theme.color.primary};
   font-size: 2.25rem;
+  margin: 0;
 `;
 
 const MessageContainer = styled.div`
   width: 100%;
   height: 10%;
+  background-color: ${theme.color.primary};
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
 `;
 
-const MessageBox = styled.input`
-  placeholder: "eiei";
-  font-size: 1.5rem;
-`;
+// const MessageBox = styled.Input`
+//   placeholder: "eiei";
+//   font-size: 1.5rem;
+// `;
