@@ -3,12 +3,17 @@ import styled from "@emotion/styled";
 import { Input, Button } from "@mui/material";
 
 import theme from "../../utils/theme";
+import MessageBubbleLeft from "./MessageBubbleLeft";
+import MessageBubbleRight from "./MessageBubbleRight";
 
 const ChatRoom = () => {
   return (
     <ContentContainer>
       <NameWrapper>Worachot</NameWrapper>
-      <ChatContent/>
+      <ChatContent>
+        <MessageBubbleLeft />
+        <MessageBubbleRight />
+      </ChatContent>
       <MessageContainer>
         <Input
           placeholder="Enter a message"
@@ -19,10 +24,12 @@ const ChatRoom = () => {
             backgroundColor: theme.color.white,
             borderRadius: "10px",
             margin: "10px",
-            padding: "5px 7px"
+            padding: "5px 7px",
           }}
         />
-        <Button sx={{backgroundColor: theme.color.white, margin: "10px"}}>Send</Button>
+        <Button sx={{ backgroundColor: theme.color.white, margin: "10px" }}>
+          Send
+        </Button>
       </MessageContainer>
     </ContentContainer>
   );
@@ -57,4 +64,4 @@ const MessageContainer = styled.div`
 const ChatContent = styled.div`
   width: 100%;
   height: 88%;
-`
+`;
