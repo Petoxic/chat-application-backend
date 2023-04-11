@@ -1,25 +1,20 @@
 import React from "react";
-import styled from "styled-components";
-import {createTheme, ThemeProvider} from "@mui/material/styles"
+import styled from "@emotion/styled";
 
-import utilsTheme from "../../utils/theme";
+import theme from "../../utils/theme";
 
 const ChatRoom = () => {
   return (
     <ContentContainer>
       <NameWrapper>Worachot</NameWrapper>
       <MessageContainer>
-        <MessageBox/>
+        <MessageBox />
       </MessageContainer>
     </ContentContainer>
   );
 };
 
 export default ChatRoom;
-
-const theme = createTheme({
-  
-})
 
 const ContentContainer = styled.div`
   width: 65%;
@@ -28,10 +23,10 @@ const ContentContainer = styled.div`
   flex-direction: column;
 `;
 
-const NameWrapper = styled.div`
+const NameWrapper = styled.p`
   width: 100%;
   height: 10%;
-  background-color: ${utilsTheme.color.primary};
+  background-color: ${theme.color.primary};
   font-size: 2.25rem;
 `;
 
@@ -45,4 +40,4 @@ const MessageContainer = styled.div`
 const MessageBox = styled.input`
   placeholder: "eiei";
   font-size: 1.5rem;
-`
+`;
