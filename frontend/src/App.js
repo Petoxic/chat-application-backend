@@ -1,21 +1,12 @@
-import logo from "./logo.svg";
 import "./App.css";
-import styled from "styled-components";
 
-const StyledDiv = styled.div`
-  display: flex;
-`;
-
-const StyledP = styled.p`
-  font-size: 50px;
-`;
+import ChatRoom from "./components/chatRoom/ChatRoom";
 
 function App() {
   return (
-    <StyledDiv>
-      <p>eiei</p>
-      <StyledP>eiei</StyledP>
-    </StyledDiv>
+    <div>
+      <ChatRoom />
+    </div>
   );
 }
 
