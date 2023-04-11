@@ -1,6 +1,9 @@
 const color = {
-  primary: "#38BDF8",
-  secondary: "#A5F3FC",
+  // primary: "#38BDF8",
+  primary: "#62CDFF",
+  // secondary: "#A5F3FC",
+  secondary: "#97DEFF",
+  ternary: "#C9EEFF",
   white: "#FFFFFF",
   black: "#000000",
   gray0: "#D9D9D9",
