@@ -10,10 +10,16 @@ import {
   TextField,
 } from "@mui/material";
 import GroupsIcon from "@mui/icons-material/Groups";
+import { io } from "socket.io-client";
+import { useNavigate } from "react-router-dom";
 
 import theme from "../../utils/theme";
 
+const socket = io("http://localhost:3001");
+
 const LoginInput = () => {
+  const navigate = useNavigate();
+
   const mockedUser = [
     "user1",
     "user2",
@@ -34,6 +40,8 @@ const LoginInput = () => {
     const username = event.target[0].value;
     const room = event.target[1].value;
     console.log(username, room);
+    socket.emit("joinRoom", { username, room });
+    navigate("/chat", { state: { username, room } });
   };
 
   return (

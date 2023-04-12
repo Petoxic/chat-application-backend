@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 
 import theme from "../../utils/theme";
 import LoginInput from "./LoginInput";

@@ -1,18 +1,35 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "@emotion/styled";
 import { Input, Button } from "@mui/material";
+import { io } from "socket.io-client";
+import { useLocation } from "react-router-dom";
 
 import theme from "../../utils/theme";
 import MessageBubbleLeft from "./MessageBubbleLeft";
 import MessageBubbleRight from "./MessageBubbleRight";
+import JoiningMessage from "./JoiningMessage";
+
+const moment = require("moment");
+const socket = io("http://localhost:3001");
 
 const ChatRoom = () => {
+  // socket.on("message", (message) => console.log(message));
+
+  const location = useLocation();
+
+  useEffect(() => {});
+
   return (
     <ContentContainer>
       <NameWrapper>Worachot</NameWrapper>
       <ChatContent>
-        <MessageBubbleLeft />
-        <MessageBubbleRight />
+        <JoiningMessage
+          message={`${moment().format("h:mm a")}: ${
+            location.state.username
+          } join the chat!`}
+        />
+        <MessageBubbleLeft name="Worachot" message="asdf" time="22.22am" />
+        <MessageBubbleRight message="asdf" time="22.23am" />
       </ChatContent>
       <MessageContainer>
         <Input
