@@ -7,6 +7,7 @@ import {
   Select,
   MenuItem,
   Button,
+  TextField,
 } from "@mui/material";
 import GroupsIcon from "@mui/icons-material/Groups";
 
@@ -28,16 +29,23 @@ const LoginInput = () => {
     return <p>{user}</p>;
   });
 
+  const submitHandler = (event) => {
+    event.preventDefault();
+    const username = event.target[0].value;
+    const room = event.target[1].value;
+    console.log(username, room);
+  };
+
   return (
-    <ContentContainer>
+    <ContentContainer onSubmit={submitHandler}>
       <FormControl variant="standard" sx={{ width: "100%" }}>
         <InputLabel>Username</InputLabel>
-        <Input placeholder="Enter username" />
+        <Input id="username" placeholder="Enter username" />
       </FormControl>
 
       <FormControl variant="standard" sx={{ width: "100%" }}>
         <InputLabel>Room</InputLabel>
-        <Select label="Room">
+        <Select label="Room" name="room">
           <MenuItem value="Javascript">Javascript</MenuItem>
           <MenuItem value="Python">Python</MenuItem>
         </Select>
@@ -51,7 +59,10 @@ const LoginInput = () => {
         <div style={{ overflow: "scroll" }}>{UsersList}</div>
       </ClientsContainer>
 
-      <Button sx={{ width: "100%", backgroundColor: theme.color.white }}>
+      <Button
+        type="submit"
+        sx={{ width: "100%", backgroundColor: theme.color.white }}
+      >
         Join Chat
       </Button>
     </ContentContainer>
@@ -60,14 +71,14 @@ const LoginInput = () => {
 
 export default LoginInput;
 
-const ContentContainer = styled.div`
+const ContentContainer = styled.form`
   width: 100%;
   height: 85%;
   background-color: ${theme.color.ternary};
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding: 0 2.5rem;
+  gap: 1.5rem;
+  padding: 1.25rem 2.5rem;
   box-sizing: border-box;
 `;
 
