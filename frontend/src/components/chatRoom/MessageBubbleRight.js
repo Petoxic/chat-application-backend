@@ -3,14 +3,14 @@ import styled from "@emotion/styled";
 import { Avatar, Typography } from "@mui/material";
 import theme from "../../utils/theme";
 
-const MessageBubbleRight = () => {
+const MessageBubbleRight = ({message, time}) => {
   return (
     <ChatMessageContainer>
       <TextContainer>
         <MessageContainer>
-          <TimeStamp>11.00am</TimeStamp>
+          <TimeStamp>{time}</TimeStamp>
           <MessageBubble>
-            <Message>รักนะครับ</Message>
+            <Message>{message}</Message>
           </MessageBubble>
         </MessageContainer>
       </TextContainer>
