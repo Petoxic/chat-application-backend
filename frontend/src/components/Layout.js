@@ -4,7 +4,7 @@ const Layout = () => {
   return (
     <>
       <div style={{ height: "100vh" }}>
-        <main>
+        <main style={{ height: "100%" }}>
           <Outlet />
         </main>
       </div>

@@ -21,7 +21,12 @@ const ChatRoom = () => {
 
   return (
     <ContentContainer>
-      <NameWrapper>Worachot</NameWrapper>
+      <NameWrapper>
+        {location.state.room}
+        <Button sx={{ backgroundColor: theme.color.white, margin: "10px" }}>
+          Users List
+        </Button>
+      </NameWrapper>
       <ChatContent>
         <JoiningMessage
           message={`${moment().format("h:mm a")}: ${
@@ -81,4 +86,5 @@ const MessageContainer = styled.div`
 const ChatContent = styled.div`
   width: 100%;
   height: 88%;
+  overflow-y: scroll;
 `;
