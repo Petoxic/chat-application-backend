@@ -1,21 +1,28 @@
-import logo from "./logo.svg";
-import "./App.css";
-import styled from "styled-components";
+import React from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-const StyledDiv = styled.div`
-  display: flex;
-`;
+import ChatRoom from "./components/chatRoom/ChatRoom";
+import Layout from "./components/Layout";
+import LoginPanel from "./components/loginPage/LoginPanel";
 
-const StyledP = styled.p`
-  font-size: 50px;
-`;
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      { path: "/", element: <LoginPanel /> },
+      { path: "/chat", element: <ChatRoom /> },
+    ],
+  },
+]);
 
 function App() {
   return (
-    <StyledDiv>
-      <p>eiei</p>
-      <StyledP>eiei</StyledP>
-    </StyledDiv>
+    // <div style={{ height: "100vh" }}>
+    //   {/* <ChatRoom /> */}
+    //   <LoginPanel />
+    // </div>
+    <RouterProvider router={router} />
   );
 }
 

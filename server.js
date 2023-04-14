@@ -1,7 +1,8 @@
 const express = require("express");
 const path = require("path");
 const http = require("http");
-const socketio = require("socket.io");
+// const socketio = require("socket.io");
+const { Server } = require("socket.io");
 const formatMessage = require("./utils/message");
 const {
   userJoin,
@@ -13,9 +14,16 @@ const { clientJoin, getClients } = require("./utils/clients");
 
 const app = express();
 const server = http.createServer(app);
-const io = socketio(server);
+// const io = socketio(server);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
 
 app.use(express.static(path.join(__dirname, "public")));
+
+// app.use(express.static(path.join(__dirname, "frontend/src")));
 
 io.on("connection", (socket) => {
   socket.on("landing", ({ username }) => {
@@ -61,9 +69,13 @@ io.on("connection", (socket) => {
       });
     }
   });
+
+  socket.on("getUsers", (room) => {
+    io.emit("sendUsers", { users: getRoomUsers(room) });
+  });
 });
 
-const PORT = 3000 || process.env.PORT;
+const PORT = 3001 || process.env.PORT;
 
 server.listen(PORT, () => {
   console.log(`server is running on port: ${PORT}`);
