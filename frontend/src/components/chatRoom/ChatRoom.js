@@ -1,23 +1,38 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { Input, Button } from "@mui/material";
-import { io } from "socket.io-client";
 import { useLocation } from "react-router-dom";
 
 import theme from "../../utils/theme";
 import MessageBubbleLeft from "./MessageBubbleLeft";
 import MessageBubbleRight from "./MessageBubbleRight";
 import JoiningMessage from "./JoiningMessage";
+import { getSocket, sendMessage } from "../../utils/socket";
 
 const moment = require("moment");
-const socket = io("http://localhost:3001");
+const socket = getSocket();
 
 const ChatRoom = () => {
-  // socket.on("message", (message) => console.log(message));
+  const [messages, setMessages] = useState([]);
+  const [messageToSend, setMessagesToSend] = useState("");
 
   const location = useLocation();
 
-  useEffect(() => {});
+  useEffect(() => {
+    socket.on("message", (message) => {
+      console.log('all Messages', message);
+      setMessages([message]);
+    })
+  }, []);
+
+  const onSend = () => {
+    sendMessage(messageToSend);
+    socket.on("message", (message) => {
+      console.log('all Messages', message);
+      setMessages([...messages, message]);
+    })
+    setMessagesToSend("");
+  };
 
   return (
     <ContentContainer>
@@ -28,11 +43,16 @@ const ChatRoom = () => {
             location.state.username
           } join the chat!`}
         />
-        <MessageBubbleLeft name="Worachot" message="asdf" time="22.22am" />
-        <MessageBubbleRight message="asdf" time="22.23am" />
+        {messages.map((msg) => (
+          msg.username === location.state.username 
+          ? <MessageBubbleRight message={msg.text} time={msg.time} />
+          : <MessageBubbleLeft name={msg.username} message={msg.text} time={msg.time} />
+        ))}
       </ChatContent>
       <MessageContainer>
         <Input
+          value={messageToSend}
+          onChange={(e) => setMessagesToSend(e.target.value)}
           placeholder="Enter a message"
           disableUnderline
           sx={{
@@ -44,7 +64,10 @@ const ChatRoom = () => {
             padding: "5px 7px",
           }}
         />
-        <Button sx={{ backgroundColor: theme.color.white, margin: "10px" }}>
+        <Button 
+          sx={{ backgroundColor: theme.color.white, margin: "10px" }}
+          onClick={() => onSend()}
+        >
           Send
         </Button>
       </MessageContainer>
