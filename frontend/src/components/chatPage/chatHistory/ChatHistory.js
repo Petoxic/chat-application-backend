@@ -5,7 +5,7 @@ import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import { Paper } from "@mui/material";
-import { getSocket } from "../../utils/socket";
+import { getSocket } from "../../../utils/socket";
 
 const socket = getSocket();
 
@@ -57,7 +57,8 @@ const ChatHistory = () => {
 export default ChatHistory;
 
 const ContentContainer = styled.div`
-  width: 440px;
+  // width: 440px;
+  width: 35%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -69,5 +70,6 @@ const InputWrapper = styled(Paper)`
   padding: '2px 4px';
   align-items: center;
   margin-bottom: 10px;
-  width: 400px;
+  // width: 400px;
+  width: 100%;
 `;

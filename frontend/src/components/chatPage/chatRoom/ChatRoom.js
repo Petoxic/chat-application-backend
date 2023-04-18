@@ -4,57 +4,61 @@ import styled from "@emotion/styled";
 import { Input, Button, Modal } from "@mui/material";
 import { useLocation } from "react-router-dom";
 
-import theme from "../../utils/theme";
+import theme from "../../../utils/theme";
 import MessageBubbleLeft from "./MessageBubbleLeft";
 import MessageBubbleRight from "./MessageBubbleRight";
 import JoiningMessage from "./JoiningMessage";
-import { getSocket, sendMessage } from "../../utils/socket";
+import { getSocket, sendMessage } from "../../../utils/socket";
 
 const moment = require("moment");
 const socket = getSocket();
 
-const ChatRoom = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [usersList, setUsersList] = useState([]);
+const ChatRoom = ({ username }) => {
   const [messages, setMessages] = useState([]);
   const [messageToSend, setMessagesToSend] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const location = useLocation();
+  const usersList = [
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+  ];
 
   const openHandler = () => {
-    setIsOpen(true);
+    setIsModalOpen(true);
   };
 
   const closeHandler = () => {
-    setIsOpen(false);
+    setIsModalOpen(false);
   };
 
-  // ! This might be edited. Is it ok enough when other users join the chat???
-  socket.on("sendUsers", (usersList) => setUsersList(usersList.users));
-
-  useEffect(() => {
-    socket.emit("getUsers", location.state.room);
-  }, []);
   useEffect(() => {
     socket.on("message", (message) => {
-      console.log('all Messages', message);
+      console.log("all Messages", message);
       setMessages([message]);
-    })
+    });
   }, []);
 
   const onSend = () => {
     sendMessage(messageToSend);
     socket.on("message", (message) => {
-      console.log('all Messages', message);
+      console.log("all Messages", message);
       setMessages([...messages, message]);
-    })
+    });
     setMessagesToSend("");
   };
 
   return (
     <ContentContainer>
       <NameWrapper>
-        <RoomTitle>{location.state.room}</RoomTitle>
+        <RoomTitle>Eiei</RoomTitle>
         <Button
           onClick={openHandler}
           sx={{ backgroundColor: theme.color.white, margin: "10px" }}
@@ -62,7 +66,7 @@ const ChatRoom = () => {
           Users List
         </Button>
         <Modal
-          open={isOpen}
+          open={isModalOpen}
           onClose={closeHandler}
           aria-labelledby="modal-title"
           aria-describedby="modal-desc"
@@ -87,15 +91,19 @@ const ChatRoom = () => {
       </NameWrapper>
       <ChatContent>
         <JoiningMessage
-          message={`${moment().format("h:mm a")}: ${
-            location.state.username
-          } join the chat!`}
+          message={`${moment().format("h:mm a")}: ${username} join the chat!`}
         />
-        {messages.map((msg) => (
-          msg.username === location.state.username 
-          ? <MessageBubbleRight message={msg.text} time={msg.time} />
-          : <MessageBubbleLeft name={msg.username} message={msg.text} time={msg.time} />
-        ))}
+        {messages.map((msg) =>
+          msg.username === username ? (
+            <MessageBubbleRight message={msg.text} time={msg.time} />
+          ) : (
+            <MessageBubbleLeft
+              name={msg.username}
+              message={msg.text}
+              time={msg.time}
+            />
+          )
+        )}
       </ChatContent>
       <MessageContainer>
         <Input
@@ -112,7 +120,7 @@ const ChatRoom = () => {
             padding: "5px 7px",
           }}
         />
-        <Button 
+        <Button
           sx={{ backgroundColor: theme.color.white, margin: "10px" }}
           onClick={() => onSend()}
         >
