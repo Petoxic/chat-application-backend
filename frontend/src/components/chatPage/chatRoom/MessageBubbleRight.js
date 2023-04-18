@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { Avatar, Typography } from "@mui/material";
 import theme from "../../../utils/theme";
 
-const MessageBubbleRight = ({message, time}) => {
+const MessageBubbleRight = ({ message, time }) => {
   return (
     <ChatMessageContainer>
       <TextContainer>
@@ -28,10 +28,7 @@ const ChatMessageContainer = styled.div`
 const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const Name = styled(Typography)`
-  font-size: 16px;
+  margin-right: 6px;
 `;
 
 const MessageContainer = styled.div`
