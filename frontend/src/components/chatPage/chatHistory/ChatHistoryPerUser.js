@@ -1,7 +1,7 @@
 import { Avatar, Typography } from "@mui/material";
 import React from "react";
 import styled from "@emotion/styled";
-import theme from "../../utils/theme";
+import theme from "../../../utils/theme";
 
 const ChatHistoryPerUser = ({ name, message, timestamp }) => {
   return (

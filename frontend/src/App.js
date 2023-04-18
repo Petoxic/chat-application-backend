@@ -1,12 +1,10 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import ChatHistory from "./components/chatHistory/ChatHistory";
-import ChatRoom from "./components/chatRoom/ChatRoom";
 import Layout from "./components/Layout";
 import LoginPanel from "./components/loginPage/LoginPanel";
 
 import styled from "@emotion/styled";
-
+import ChatPage from "./components/chatPage/ChatPage";
 
 const router = createBrowserRouter([
   {
@@ -14,7 +12,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { path: "/", element: <LoginPanel /> },
-      { path: "/chat", element: <ChatRoom /> },
+      { path: "/chat", element: <ChatPage /> },
     ],
   },
 ]);
@@ -38,7 +36,5 @@ const Container = styled.div`
   width: 100%;
   height: 100vh;
 `;
-
-
 
 export default App;
