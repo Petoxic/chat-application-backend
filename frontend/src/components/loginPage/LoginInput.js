@@ -41,7 +41,7 @@ export default LoginInput;
 
 const ContentContainer = styled.form`
   width: 100%;
-  height: 85%;
+  height: 35%;
   background-color: ${theme.color.ternary};
   display: flex;
   flex-direction: column;

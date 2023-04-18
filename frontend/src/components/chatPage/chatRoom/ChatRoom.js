@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { Input, Button } from "@mui/material";
+import { Input, Button, Modal } from "@mui/material";
 import { useLocation } from "react-router-dom";
 
 import theme from "../../../utils/theme";
@@ -15,6 +15,28 @@ const socket = getSocket();
 const ChatRoom = ({ username }) => {
   const [messages, setMessages] = useState([]);
   const [messageToSend, setMessagesToSend] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const usersList = [
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+    { username: "user1" },
+  ];
+
+  const openHandler = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeHandler = () => {
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     socket.on("message", (message) => {
@@ -35,7 +57,7 @@ const ChatRoom = ({ username }) => {
   return (
     <ContentContainer>
       <NameWrapper>
-        <RoomTitle>{location.state.room}</RoomTitle>
+        <RoomTitle>Eiei</RoomTitle>
         <Button
           onClick={openHandler}
           sx={{ backgroundColor: theme.color.white, margin: "10px" }}
@@ -43,7 +65,7 @@ const ChatRoom = ({ username }) => {
           Users List
         </Button>
         <Modal
-          open={isOpen}
+          open={isModalOpen}
           onClose={closeHandler}
           aria-labelledby="modal-title"
           aria-describedby="modal-desc"
