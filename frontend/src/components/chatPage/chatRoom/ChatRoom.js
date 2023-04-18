@@ -1,36 +1,36 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { Input, Button, Modal } from "@mui/material";
-import { io } from "socket.io-client";
+import { Input, Button } from "@mui/material";
 import { useLocation } from "react-router-dom";
 
-import theme from "../../utils/theme";
+import theme from "../../../utils/theme";
 import MessageBubbleLeft from "./MessageBubbleLeft";
 import MessageBubbleRight from "./MessageBubbleRight";
 import JoiningMessage from "./JoiningMessage";
+import { getSocket, sendMessage } from "../../../utils/socket";
 
 const moment = require("moment");
-const socket = io("http://localhost:3001");
+const socket = getSocket();
 
-const ChatRoom = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [usersList, setUsersList] = useState([]);
-  const location = useLocation();
-
-  const openHandler = () => {
-    setIsOpen(true);
-  };
-
-  const closeHandler = () => {
-    setIsOpen(false);
-  };
-
-  // ! This might be edited. Is it ok enough when other users join the chat???
-  socket.on("sendUsers", (usersList) => setUsersList(usersList.users));
+const ChatRoom = ({ username }) => {
+  const [messages, setMessages] = useState([]);
+  const [messageToSend, setMessagesToSend] = useState("");
 
   useEffect(() => {
-    socket.emit("getUsers", location.state.room);
+    socket.on("message", (message) => {
+      console.log("all Messages", message);
+      setMessages([message]);
+    });
   }, []);
+
+  const onSend = () => {
+    sendMessage(messageToSend);
+    socket.on("message", (message) => {
+      console.log("all Messages", message);
+      setMessages([...messages, message]);
+    });
+    setMessagesToSend("");
+  };
 
   return (
     <ContentContainer>
@@ -68,15 +68,24 @@ const ChatRoom = () => {
       </NameWrapper>
       <ChatContent>
         <JoiningMessage
-          message={`${moment().format("h:mm a")}: ${
-            location.state.username
-          } join the chat!`}
+          message={`${moment().format("h:mm a")}: ${username} join the chat!`}
         />
-        <MessageBubbleLeft name="Worachot" message="asdf" time="22.22am" />
-        <MessageBubbleRight message="asdf" time="22.23am" />
+        {messages.map((msg) =>
+          msg.username === username ? (
+            <MessageBubbleRight message={msg.text} time={msg.time} />
+          ) : (
+            <MessageBubbleLeft
+              name={msg.username}
+              message={msg.text}
+              time={msg.time}
+            />
+          )
+        )}
       </ChatContent>
       <MessageContainer>
         <Input
+          value={messageToSend}
+          onChange={(e) => setMessagesToSend(e.target.value)}
           placeholder="Enter a message"
           disableUnderline
           sx={{
@@ -88,7 +97,10 @@ const ChatRoom = () => {
             padding: "5px 7px",
           }}
         />
-        <Button sx={{ backgroundColor: theme.color.white, margin: "10px" }}>
+        <Button
+          sx={{ backgroundColor: theme.color.white, margin: "10px" }}
+          onClick={() => onSend()}
+        >
           Send
         </Button>
       </MessageContainer>

@@ -5,7 +5,8 @@ const http = require("http");
 const { Server } = require("socket.io");
 const formatMessage = require("./utils/message");
 const {
-  userJoin,
+  userJoinChat,
+  userJoinRoom,
   getCurrentUser,
   getRoomUsers,
   userLeave,
@@ -31,9 +32,14 @@ io.on("connection", (socket) => {
       clients: getClients(),
     });
   });
+
+  socket.on("joinChat", (username) => {
+    userJoinChat(socket.id, username);
+  });
+
   socket.on("joinRoom", ({ username, room }) => {
     const client = clientJoin(socket.id, username);
-    const user = userJoin(socket.id, username, room);
+    const user = userJoinRoom(socket.id, username, room);
 
     socket.join(user.room);
 
@@ -51,6 +57,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("chatMessage", (msg) => {
+    console.log(msg);
     const user = getCurrentUser(socket.id);
     io.to(user.room).emit("message", formatMessage(user.username, msg));
   });

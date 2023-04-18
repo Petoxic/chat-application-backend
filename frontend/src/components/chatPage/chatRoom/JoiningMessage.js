@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 
-import theme from "../../utils/theme";
+import theme from "../../../utils/theme";
 
 const JoiningMessage = ({message}) => {
   return (
