@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import ChatHistoryPerUser from "./ChatHistoryPerUser";
+import CreateChatGroup from "./CreateChatGroup";
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
@@ -43,6 +44,7 @@ const ChatHistory = () => {
           <SearchIcon />
         </IconButton>
       </InputWrapper>
+      <CreateChatGroup />
       {messageHistories.map((message) => (
         <ChatHistoryPerUser 
           name={chatRoom} 
