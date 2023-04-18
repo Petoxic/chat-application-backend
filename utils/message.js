@@ -3,7 +3,7 @@ const moment = require("moment");
 const messages = [];
 
 function pushMessage(username, text, room) {
-  const message = { username, text, room };
+  const message = { username, text, room, time: moment().format("h:mm a") };
 
   messages.push(message);
 
