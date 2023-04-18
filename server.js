@@ -3,7 +3,7 @@ const path = require("path");
 const http = require("http");
 // const socketio = require("socket.io");
 const { Server } = require("socket.io");
-const formatMessage = require("./utils/message");
+const { formatMessage, pushMessage } = require("./utils/message");
 const {
   userJoinChat,
   userJoinRoom,
@@ -42,9 +42,10 @@ io.on("connection", (socket) => {
     const user = userJoinRoom(socket.id, username, room);
 
     socket.join(user.room);
-
+    const message = pushMessage("Bot", "Welcome to Thailand only!", user.room);
     socket.emit("message", formatMessage("Bot", "Welcome to Thailand only!"));
 
+    pushMessage("Bot", `${user.username} Ma laew ja`, user.room);
     io.to(user.room).emit(
       "message",
       formatMessage("Bot", `${user.username} Ma laew ja`)
@@ -59,6 +60,7 @@ io.on("connection", (socket) => {
   socket.on("chatMessage", (msg) => {
     console.log(msg);
     const user = getCurrentUser(socket.id);
+    const message = pushMessage(user.username, msg, user.room);
     io.to(user.room).emit("message", formatMessage(user.username, msg));
   });
 

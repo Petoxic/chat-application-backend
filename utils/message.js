@@ -1,5 +1,15 @@
 const moment = require("moment");
 
+const messages = [];
+
+function pushMessage(username, text, room) {
+  const message = { username, text, room };
+
+  messages.push(message);
+
+  return message;
+}
+
 function formatMessage(username, text) {
   return {
     username,
@@ -8,4 +18,4 @@ function formatMessage(username, text) {
   };
 }
 
-module.exports = formatMessage;
+module.exports = { formatMessage, pushMessage };
