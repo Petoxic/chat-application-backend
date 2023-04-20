@@ -1,24 +1,27 @@
-// users = [ { id, username, roomList: [ room1, room2, ... ] }, ... ]
+// users = [ { id, username, roomList: [ room1, room2, ... ], currentRoom: "room1" }, ... ]
 const users = [];
 
 // Join user to room
-function userJoinRoom(id, username, room) {
+function userJoinRoom(id, username, selectedRoom) {
   // const user = { id, username, room };
 
-  const user = users.find((user) => {
-    user.id === id && user.username === username;
-  });
+  console.log(id, username);
 
-  // TODO: change room var
-  // if (user !== undefined) {
-  //   const room = user.roomList.find((roomName) => roomName === room);
-  //   if (room === undefined) {
-  //     user.roomList = [...user.roomList, room];
-  //   }
-  // }
+  const user = users.find(
+    (user) => user.id === id && user.username === username
+  );
 
-  users.push(user);
-  console.log(users);
+  if (user !== undefined) {
+    const room = user.roomList.find((roomName) => roomName === selectedRoom);
+    if (room === undefined) {
+      user.roomList = [...user.roomList, selectedRoom];
+    }
+    user.currentRoom = selectedRoom;
+  }
+
+  // users.push(user);
+  // console.log(users);
+  console.log(user);
   return user;
 }
 
@@ -26,9 +29,14 @@ function userJoinRoom(id, username, room) {
 // ? Is it possible not to have duplicate name in server???
 function userJoinChat(id, username) {
   if (users.find((user) => user.id === id) === undefined) {
-    const user = { id, username, room: [] };
+    const user = {
+      id,
+      username,
+      roomList: [],
+      currentRoom: "",
+    };
     users.push(user);
-    console.log("users are -> ", users);
+    // console.log("users are -> ", users);
   } else {
     console.log("duplicate user");
   }
@@ -36,7 +44,6 @@ function userJoinChat(id, username) {
 
 // Get current user
 function getCurrentUser(id) {
-  console.log("test", users, id);
   return users.find((user) => user.id === id);
 }
 
@@ -51,7 +58,9 @@ function userLeave(id) {
 
 // Get room users
 function getRoomUsers(room) {
-  return users.filter((user) => user.room === room);
+  return users.filter(
+    (user) => user.roomList.find((r) => r === room) !== undefined
+  );
 }
 
 module.exports = {

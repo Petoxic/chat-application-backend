@@ -1,133 +1,189 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { Input, Button, Modal } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import {
+  Input,
+  Button,
+  Modal,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import theme from "../../../utils/theme";
 import MessageBubbleLeft from "./MessageBubbleLeft";
 import MessageBubbleRight from "./MessageBubbleRight";
 import JoiningMessage from "./JoiningMessage";
-import { getSocket, sendMessage } from "../../../utils/socket";
+import {
+  getSocket,
+  sendMessage,
+  isInRoom,
+  joinRoom,
+} from "../../../utils/socket";
 
-const moment = require("moment");
 const socket = getSocket();
 
-const ChatRoom = ({ username }) => {
+const ChatRoom = ({ username, currentRoom }) => {
   const [messages, setMessages] = useState([]);
   const [messageToSend, setMessagesToSend] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isJoinRoom, setIsJoinRoom] = useState(false);
+  const [usersList, setUsersList] = useState([]);
+  const [anchorElement, setAnchorElement] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const usersList = [
-    { username: "user1" },
-    { username: "user1" },
-    { username: "user1" },
-    { username: "user1" },
-    { username: "user1" },
-    { username: "user1" },
-    { username: "user1" },
-    { username: "user1" },
-    { username: "user1" },
-    { username: "user1" },
-  ];
-
-  const openHandler = () => {
+  const onOpenModal = () => {
     setIsModalOpen(true);
   };
 
-  const closeHandler = () => {
+  const onCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const onOpenMenu = (event) => {
+    console.log(event);
+    setAnchorElement(event.currentTarget);
+    setIsMenuOpen(true);
+  };
+
+  const onCloseMenu = () => {
+    setAnchorElement(null);
+    setIsMenuOpen(false);
   };
 
   useEffect(() => {
     socket.on("message", (message) => {
-      console.log("all Messages", message);
-      setMessages([message]);
+      console.log(message);
+      setMessages([...messages, message]);
+      console.log("all Messages", messages);
     });
-  }, []);
+  }, [messages]);
+
+  useEffect(() => {
+    isInRoom(currentRoom);
+    socket.on("checkRoomResult", ({ isJoin, name }) => {
+      if (name === username) {
+        if (isJoin) {
+          setIsJoinRoom(true);
+        } else {
+          setIsJoinRoom(false);
+        }
+      }
+    });
+  }, [currentRoom]);
+
+  useEffect(() => {
+    socket.on("roomUsers", ({ users }) => {
+      setUsersList(users);
+    });
+  });
 
   const onSend = () => {
     sendMessage(messageToSend);
-    socket.on("message", (message) => {
-      console.log("all Messages", message);
-      setMessages([...messages, message]);
-    });
     setMessagesToSend("");
   };
 
-  return (
-    <ContentContainer>
-      <NameWrapper>
-        <RoomTitle>Eiei</RoomTitle>
-        <Button
-          onClick={openHandler}
-          sx={{ backgroundColor: theme.color.white, margin: "10px" }}
-        >
-          Users List
-        </Button>
-        <Modal
-          open={isModalOpen}
-          onClose={closeHandler}
-          aria-labelledby="modal-title"
-          aria-describedby="modal-desc"
-        >
-          <ModalContainer>
-            <ModalTitleContainer id="modal-title">
-              <ModalTitle>Users List</ModalTitle>
-              <Button
-                onClick={closeHandler}
-                sx={{ backgroundColor: theme.color.white, margin: "10px" }}
-              >
-                Close
-              </Button>
-            </ModalTitleContainer>
-            <UsersListContainer id="modal-desc">
-              {usersList.map((user) => (
-                <p>{user.username}</p>
-              ))}
-            </UsersListContainer>
-          </ModalContainer>
-        </Modal>
-      </NameWrapper>
-      <ChatContent>
-        <JoiningMessage
-          message={`${moment().format("h:mm a")}: ${username} join the chat!`}
-        />
-        {messages.map((msg) =>
-          msg.username === username ? (
-            <MessageBubbleRight message={msg.text} time={msg.time} />
-          ) : (
-            <MessageBubbleLeft
-              name={msg.username}
-              message={msg.text}
-              time={msg.time}
-            />
-          )
-        )}
-      </ChatContent>
-      <MessageContainer>
-        <Input
-          value={messageToSend}
-          onChange={(e) => setMessagesToSend(e.target.value)}
-          placeholder="Enter a message"
-          disableUnderline
-          sx={{
-            fontSize: "1rem",
-            width: "85%",
-            backgroundColor: theme.color.white,
-            borderRadius: "10px",
-            margin: "10px",
-            padding: "5px 7px",
-          }}
-        />
-        <Button
-          sx={{ backgroundColor: theme.color.white, margin: "10px" }}
-          onClick={() => onSend()}
-        >
-          Send
-        </Button>
-      </MessageContainer>
-    </ContentContainer>
-  );
+  const onJoinRoom = () => {
+    joinRoom(username, currentRoom);
+    setIsJoinRoom(true);
+  };
+
+  const ChatPage = () => {
+    return (
+      <ContentContainer>
+        <NameWrapper>
+          <RoomTitle>{currentRoom}</RoomTitle>
+          <Button
+            onClick={onOpenModal}
+            sx={{ backgroundColor: theme.color.white, margin: "10px" }}
+          >
+            Users List
+          </Button>
+          <Modal
+            open={isModalOpen}
+            onClose={onCloseModal}
+            aria-labelledby="modal-title"
+            aria-describedby="modal-desc"
+          >
+            <ModalContainer>
+              <ModalTitleContainer id="modal-title">
+                <ModalTitle>Users List</ModalTitle>
+                <Button
+                  onClick={onCloseModal}
+                  sx={{ backgroundColor: theme.color.white, margin: "10px" }}
+                >
+                  Close
+                </Button>
+              </ModalTitleContainer>
+              <UsersListContainer id="modal-desc">
+                {usersList.map((user) => (
+                  <p>{user.username}</p>
+                ))}
+              </UsersListContainer>
+            </ModalContainer>
+          </Modal>
+          <IconButton onClick={onOpenMenu}>
+            <MoreVertIcon />
+          </IconButton>
+          <Menu
+            open={isMenuOpen}
+            onClose={onCloseMenu}
+            anchorEl={anchorElement}
+          >
+            <MenuItem onClick={onCloseMenu}>Leave Room</MenuItem>
+          </Menu>
+        </NameWrapper>
+        <ChatContent>
+          {messages.map((msg) =>
+            msg.username === undefined ? (
+              <JoiningMessage message={msg.text} />
+            ) : msg.username === username ? (
+              <MessageBubbleRight message={msg.text} time={msg.time} />
+            ) : (
+              <MessageBubbleLeft
+                name={msg.username}
+                message={msg.text}
+                time={msg.time}
+              />
+            )
+          )}
+        </ChatContent>
+        <MessageContainer>
+          <Input
+            value={messageToSend}
+            onChange={(e) => setMessagesToSend(e.target.value)}
+            placeholder="Enter a message"
+            disableUnderline
+            sx={{
+              fontSize: "1rem",
+              width: "85%",
+              backgroundColor: theme.color.white,
+              borderRadius: "10px",
+              margin: "10px",
+              padding: "5px 7px",
+            }}
+          />
+          <Button
+            sx={{ backgroundColor: theme.color.white, margin: "10px" }}
+            onClick={() => onSend()}
+          >
+            Send
+          </Button>
+        </MessageContainer>
+      </ContentContainer>
+    );
+  };
+
+  const JoinPage = () => {
+    return (
+      <ContentContainer>
+        <div>{currentRoom}</div>
+        <Button onClick={onJoinRoom}>Join</Button>
+      </ContentContainer>
+    );
+  };
+
+  return <>{isJoinRoom ? <ChatPage /> : <JoinPage />}</>;
 };
 
 export default ChatRoom;

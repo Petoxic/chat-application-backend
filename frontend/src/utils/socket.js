@@ -16,3 +16,7 @@ export const sendMessage = (message) => {
 export const getSocket = () => {
   return socket;
 };
+
+export const isInRoom = (room) => {
+  socket.emit("checkRoom", room);
+};
