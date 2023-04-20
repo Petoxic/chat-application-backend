@@ -44,19 +44,11 @@ io.on("connection", (socket) => {
     const user = userJoinRoom(socket.id, username, room);
 
     socket.join(user.currentRoom);
-    // const message = pushMessage(
-    //   "Bot",
-    //   "Welcome to Thailand only!",
-    //   user.currentRoom
-    // );
 
     const message = pushAnnouncement(
       `${user.username} Ma laew ja`,
       user.currentRoom
     );
-
-    // TODO: add this description
-    // socket.emit("message", message);
 
     // TODO: add this description
     io.to(user.currentRoom).emit("message", message);
@@ -90,11 +82,6 @@ io.on("connection", (socket) => {
       });
     }
   });
-
-  // get users in that room
-  // socket.on("getUsers", (room) => {
-  //   io.emit("sendUsers", { users: getRoomUsers(room) });
-  // });
 
   // check if user is in that room or not
   socket.on("checkRoom", (checkRoom) => {
