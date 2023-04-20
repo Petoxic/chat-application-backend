@@ -1,18 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "@emotion/styled";
 import ChatHistory from "./chatHistory/ChatHistory";
 import ChatRoom from "./chatRoom/ChatRoom";
 import { useLocation } from "react-router-dom";
+import { Button } from "@mui/material";
 
 const ChatPage = () => {
+  const [currentRoom, setCurrentRoom] = useState("test1");
   const location = useLocation();
 
-  console.log("lcoation -> ", location);
+  // const changeRoom = () => {
+  //   if (currentRoom === "test1") {
+  //     setCurrentRoom("test4");
+  //   } else {
+  //     setCurrentRoom("test1");
+  //   }
+  // };
 
   return (
     <ContentContainer>
+      {/* <Button onClick={changeRoom}>Change Room!</Button> */}
       <ChatHistory />
-      <ChatRoom username={location.state.username} />
+      <ChatRoom username={location.state.username} currentRoom={currentRoom} />
     </ContentContainer>
   );
 };
