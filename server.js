@@ -3,7 +3,7 @@ const path = require("path");
 const http = require("http");
 // const socketio = require("socket.io");
 const { Server } = require("socket.io");
-const formatMessage = require("./utils/message");
+const { pushMessage, pushAnnouncement } = require("./utils/message");
 const {
   userJoinChat,
   userJoinRoom,
@@ -33,52 +33,66 @@ io.on("connection", (socket) => {
     });
   });
 
+  // join the chat page
   socket.on("joinChat", (username) => {
     userJoinChat(socket.id, username);
   });
 
+  // join the chat room
   socket.on("joinRoom", ({ username, room }) => {
     const client = clientJoin(socket.id, username);
     const user = userJoinRoom(socket.id, username, room);
 
-    socket.join(user.room);
+    socket.join(user.currentRoom);
 
-    socket.emit("message", formatMessage("Bot", "Welcome to Thailand only!"));
-
-    io.to(user.room).emit(
-      "message",
-      formatMessage("Bot", `${user.username} Ma laew ja`)
+    const message = pushAnnouncement(
+      `${user.username} Ma laew ja`,
+      user.currentRoom
     );
 
-    io.to(user.room).emit("roomUsers", {
-      room: user.room,
-      users: getRoomUsers(user.room),
+    // TODO: add this description
+    io.to(user.currentRoom).emit("message", message);
+
+    // TODO: add this description
+    io.to(user.currentRoom).emit("roomUsers", {
+      room: user.currentRoom,
+      users: getRoomUsers(user.currentRoom),
     });
   });
 
+  // TODO: add this description
   socket.on("chatMessage", (msg) => {
-    console.log(msg);
     const user = getCurrentUser(socket.id);
-    io.to(user.room).emit("message", formatMessage(user.username, msg));
+    const message = pushMessage(user.username, msg, user.currentRoom);
+    io.to(user.currentRoom).emit("message", message);
   });
 
+  // TODO: add this description
   socket.on("disconnect", () => {
     const user = userLeave(socket.id);
     if (user) {
-      io.to(user.room).emit(
+      io.to(user.currentRoom).emit(
         "message",
-        formatMessage("Bot", `${user.username} Pai la ja`)
+        pushAnnouncement(`${user.username} Pai la ja`, user.currentRoom)
       );
 
-      io.to(user.room).emit("roomUsers", {
-        room: user.room,
-        users: getRoomUsers(user.room),
+      io.to(user.currentRoom).emit("roomUsers", {
+        room: user.currentRoom,
+        users: getRoomUsers(user.currentRoom),
       });
     }
   });
 
-  socket.on("getUsers", (room) => {
-    io.emit("sendUsers", { users: getRoomUsers(room) });
+  // check if user is in that room or not
+  socket.on("checkRoom", (checkRoom) => {
+    const user = getCurrentUser(socket.id);
+    if (user === undefined) {
+      // return search result
+      io.emit("checkRoomResult", { isJoin: false, username: user.username });
+    } else {
+      const room = user.roomList.find((room) => room === checkRoom);
+      io.emit("checkRoomResult", { isJoin: true, username: user.username });
+    }
   });
 });
 

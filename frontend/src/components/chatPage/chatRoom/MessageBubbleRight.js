@@ -38,15 +38,10 @@ const MessageContainer = styled.div`
 `;
 
 const MessageBubble = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border: 1px solid ${theme.color.primary};
   border-radius: 10px 1px 10px 10px;
-  min-width: 100px;
-  width: 100%;
-  min-height: 30px;
   background-color: ${theme.color.secondary};
+  padding: 10px;
 `;
 
 const Message = styled(Typography)`
