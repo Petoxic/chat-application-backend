@@ -16,6 +16,13 @@ const {
   getRoomUsers,
   userLeaveRoom,
 } = require("./utils/users");
+const {
+  createRoom,
+  joinRoom,
+  getRooms,
+  getJoinRooms,
+  getUnjoinRooms,
+} = require("./utils/rooms");
 const { clientJoin, getClients } = require("./utils/clients");
 const { create } = require("domain");
 
@@ -48,6 +55,7 @@ io.on("connection", (socket) => {
   socket.on("joinRoom", ({ username, room }) => {
     const client = clientJoin(socket.id, username);
     const user = userJoinRoom(socket.id, username, room);
+    joinRoom(username, room);
 
     socket.join(user.currentRoom);
 
@@ -112,6 +120,23 @@ io.on("connection", (socket) => {
     const msg = pushPinnedMessage(user.username, message, room);
     // send pinned message to all users in room
     io.to(room).emit("sendPinnedMessage", msg);
+  });
+
+  // create room
+  socket.on("createRoom", ({ username, room }) => {
+    createRoom(username, room);
+
+    io.emit("roomList", { rooms: getRooms() });
+  });
+
+  // get unjoin room list
+  socket.on("getUnjoinRooms", ({ username }) => {
+    io.emit("unjoinRoomList", { rooms: getUnjoinRooms(username) });
+  });
+
+  // get join room list
+  socket.on("getJoinRooms", ({ username }) => {
+    io.emit("joinRoomList", { rooms: getJoinRooms(username) });
   });
 });
 
