@@ -4,6 +4,7 @@ import ChatHistory from "./chatHistory/ChatHistory";
 import ChatRoom from "./chatRoom/ChatRoom";
 import { useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
+import NavBar from "../navBar/NavBar";
 
 const ChatPage = () => {
   const [currentRoom, setCurrentRoom] = useState("test1");
@@ -20,7 +21,8 @@ const ChatPage = () => {
   return (
     <ContentContainer>
       {/* <Button onClick={changeRoom}>Change Room!</Button> */}
-      <ChatHistory />
+      <NavBar/>
+      {/* <ChatHistory /> */}
       <ChatRoom username={location.state.username} currentRoom={currentRoom} />
     </ContentContainer>
   );

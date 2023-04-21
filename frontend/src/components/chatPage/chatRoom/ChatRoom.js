@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import {
   Input,
@@ -131,7 +130,7 @@ const ChatRoom = ({ username, currentRoom }) => {
           <Menu
             open={isMenuOpen}
             onClose={onCloseMenu}
-            anchorOrigin={{ horizontal: "right", vertical: "top" }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
           >
             <MenuItem onClick={onCloseMenu}>Leave Room</MenuItem>
           </Menu>
