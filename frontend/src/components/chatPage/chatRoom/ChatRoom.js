@@ -20,37 +20,17 @@ import {
   sendMessage,
   isInRoom,
   joinRoom,
+  leaveRoom,
 } from "../../../utils/socket";
 
 const socket = getSocket();
 
 const ChatRoom = ({ username, currentRoom }) => {
   const [messages, setMessages] = useState([]);
-  const [messageToSend, setMessagesToSend] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isJoinRoom, setIsJoinRoom] = useState(false);
   const [usersList, setUsersList] = useState([]);
-  const [anchorElement, setAnchorElement] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const onOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const onCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const onOpenMenu = (event) => {
-    console.log(event);
-    setAnchorElement(event.currentTarget);
-    setIsMenuOpen(true);
-  };
-
-  const onCloseMenu = () => {
-    setAnchorElement(null);
-    setIsMenuOpen(false);
-  };
 
   useEffect(() => {
     socket.on("message", (message) => {
@@ -79,6 +59,29 @@ const ChatRoom = ({ username, currentRoom }) => {
     });
   }, []);
 
+  const onOpenModal = () => {
+    setIsModalOpen(true);
+    setIsMenuOpen(false);
+  };
+
+  const onCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const onOpenMenu = () => {
+    setIsMenuOpen(true);
+  };
+
+  const onCloseMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  const onLeaveRoom = () => {
+    setIsMenuOpen(false);
+    leaveRoom(currentRoom);
+    setIsJoinRoom(false);
+  };
+
   const onSend = (event) => {
     event.preventDefault();
     const message = event.target[0].value;
@@ -95,12 +98,6 @@ const ChatRoom = ({ username, currentRoom }) => {
       <ContentContainer>
         <NameWrapper>
           <RoomTitle>{currentRoom}</RoomTitle>
-          <Button
-            onClick={onOpenModal}
-            sx={{ backgroundColor: theme.color.white, margin: "10px" }}
-          >
-            Users List
-          </Button>
           <Modal
             open={isModalOpen}
             onClose={onCloseModal}
@@ -132,7 +129,8 @@ const ChatRoom = ({ username, currentRoom }) => {
             onClose={onCloseMenu}
             anchorOrigin={{ horizontal: "right", vertical: "top" }}
           >
-            <MenuItem onClick={onCloseMenu}>Leave Room</MenuItem>
+            <MenuItem onClick={onLeaveRoom}>Leave Room</MenuItem>
+            <MenuItem onClick={onOpenModal}>Users List</MenuItem>
           </Menu>
         </NameWrapper>
         <ChatContent>

@@ -9,7 +9,7 @@ const {
   userJoinRoom,
   getCurrentUser,
   getRoomUsers,
-  userLeave,
+  userLeaveRoom,
 } = require("./utils/users");
 const { clientJoin, getClients } = require("./utils/clients");
 
@@ -50,35 +50,35 @@ io.on("connection", (socket) => {
       user.currentRoom
     );
 
-    // TODO: add this description
+    // send message to everyone in room
     io.to(user.currentRoom).emit("message", message);
 
-    // TODO: add this description
+    // resend list of users in room
     io.to(user.currentRoom).emit("roomUsers", {
       room: user.currentRoom,
       users: getRoomUsers(user.currentRoom),
     });
   });
 
-  // TODO: add this description
+  // send message into room
   socket.on("chatMessage", (msg) => {
     const user = getCurrentUser(socket.id);
     const message = pushMessage(user.username, msg, user.currentRoom);
     io.to(user.currentRoom).emit("message", message);
   });
 
-  // TODO: add this description
-  socket.on("disconnect", () => {
-    const user = userLeave(socket.id);
+  // leave room
+  socket.on("leaveRoom", (room) => {
+    const user = userLeaveRoom(socket.id, room);
     if (user) {
-      io.to(user.currentRoom).emit(
+      io.to(room).emit(
         "message",
-        pushAnnouncement(`${user.username} Pai la ja`, user.currentRoom)
+        pushAnnouncement(`${user.username} Pai la ja`, room)
       );
 
-      io.to(user.currentRoom).emit("roomUsers", {
+      io.to(room).emit("roomUsers", {
         room: user.currentRoom,
-        users: getRoomUsers(user.currentRoom),
+        users: getRoomUsers(room),
       });
     }
   });
