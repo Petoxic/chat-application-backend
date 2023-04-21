@@ -15,7 +15,6 @@ const LoginInput = () => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    console.log(event)
     const username = event.target[0].value;
     joinChat(username);
     navigate("/chat", { state: { username } });
@@ -29,7 +28,7 @@ const LoginInput = () => {
       </FormControl>
 
       <Button
-        type="submit"
+        type="join"
         sx={{ width: "100%", backgroundColor: theme.color.white }}
       >
         Join Chat
