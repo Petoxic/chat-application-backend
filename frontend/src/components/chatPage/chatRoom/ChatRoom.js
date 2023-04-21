@@ -7,6 +7,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  FormControl,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
@@ -76,11 +77,12 @@ const ChatRoom = ({ username, currentRoom }) => {
     socket.on("roomUsers", ({ users }) => {
       setUsersList(users);
     });
-  });
+  }, []);
 
-  const onSend = () => {
-    sendMessage(messageToSend);
-    setMessagesToSend("");
+  const onSend = (event) => {
+    event.preventDefault();
+    const message = event.target[0].value;
+    sendMessage(message);
   };
 
   const onJoinRoom = () => {
@@ -128,7 +130,7 @@ const ChatRoom = ({ username, currentRoom }) => {
           <Menu
             open={isMenuOpen}
             onClose={onCloseMenu}
-            anchorEl={anchorElement}
+            anchorOrigin={{ horizontal: "right", vertical: "top" }}
           >
             <MenuItem onClick={onCloseMenu}>Leave Room</MenuItem>
           </Menu>
@@ -149,26 +151,30 @@ const ChatRoom = ({ username, currentRoom }) => {
           )}
         </ChatContent>
         <MessageContainer>
-          <Input
-            value={messageToSend}
-            onChange={(e) => setMessagesToSend(e.target.value)}
-            placeholder="Enter a message"
-            disableUnderline
-            sx={{
-              fontSize: "1rem",
-              width: "85%",
-              backgroundColor: theme.color.white,
-              borderRadius: "10px",
-              margin: "10px",
-              padding: "5px 7px",
-            }}
-          />
-          <Button
-            sx={{ backgroundColor: theme.color.white, margin: "10px" }}
-            onClick={() => onSend()}
-          >
-            Send
-          </Button>
+          <FormContainer onSubmit={onSend}>
+            <FormControl variant="standard" sx={{ width: "85%" }}>
+              <Input
+                id="user-message"
+                placeholder="Enter a message"
+                disableUnderline
+                sx={{
+                  fontSize: "1rem",
+                  width: "100%",
+                  height: "80%",
+                  backgroundColor: theme.color.white,
+                  borderRadius: "10px",
+                  margin: "10px",
+                  paddingLeft: "10px",
+                }}
+              />
+            </FormControl>
+            <Button
+              type="join"
+              sx={{ backgroundColor: theme.color.white, margin: "10px" }}
+            >
+              Send
+            </Button>
+          </FormContainer>
         </MessageContainer>
       </ContentContainer>
     );
@@ -215,6 +221,14 @@ const MessageContainer = styled.div`
   background-color: ${theme.color.primary};
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+`;
+
+const FormContainer = styled.form`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0;
   justify-content: space-between;
 `;
 
