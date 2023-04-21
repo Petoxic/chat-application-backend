@@ -9,7 +9,7 @@ import {
   MenuItem,
   FormControl,
 } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { MoreVert, PushPin } from "@mui/icons-material";
 
 import theme from "../../../utils/theme";
 import MessageBubbleLeft from "./MessageBubbleLeft";
@@ -31,6 +31,7 @@ const ChatRoom = ({ username, currentRoom }) => {
   const [isJoinRoom, setIsJoinRoom] = useState(false);
   const [usersList, setUsersList] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [pinnedMessage, setPinnedMessage] = useState(null);
 
   useEffect(() => {
     socket.on("message", (message) => {
@@ -58,6 +59,12 @@ const ChatRoom = ({ username, currentRoom }) => {
       setUsersList(users);
     });
   }, []);
+
+  useEffect(() => {
+    socket.on("sendPinnedMessage", (message) => {
+      setPinnedMessage(message);
+    });
+  }, [pinnedMessage]);
 
   const onOpenModal = () => {
     setIsModalOpen(true);
@@ -122,7 +129,7 @@ const ChatRoom = ({ username, currentRoom }) => {
             </ModalContainer>
           </Modal>
           <IconButton onClick={onOpenMenu}>
-            <MoreVertIcon />
+            <MoreVert />
           </IconButton>
           <Menu
             open={isMenuOpen}
@@ -133,12 +140,24 @@ const ChatRoom = ({ username, currentRoom }) => {
             <MenuItem onClick={onOpenModal}>Users List</MenuItem>
           </Menu>
         </NameWrapper>
+        {pinnedMessage !== null && (
+          <PinnedMessageContainer>
+            <PushPin sx={{ transform: "rotate(45deg)" }} />
+            {pinnedMessage.username} : {pinnedMessage.time} {" >> "}
+            {pinnedMessage.text}
+          </PinnedMessageContainer>
+        )}
+
         <ChatContent>
           {messages.map((msg) =>
             msg.username === undefined ? (
               <JoiningMessage message={msg.text} />
             ) : msg.username === username ? (
-              <MessageBubbleRight message={msg.text} time={msg.time} />
+              <MessageBubbleRight
+                message={msg.text}
+                time={msg.time}
+                room={currentRoom}
+              />
             ) : (
               <MessageBubbleLeft
                 name={msg.username}
@@ -205,7 +224,20 @@ const NameWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  padding-left: 7px;
   background-color: ${theme.color.primary};
+`;
+
+const PinnedMessageContainer = styled.div`
+  width: 100%;
+  height: 6%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 1.25rem;
+  gap: 10px;
+  padding-left: 5px;
+  background-color: ${theme.color.gray0};
 `;
 
 const RoomTitle = styled.p`

@@ -3,7 +3,12 @@ const path = require("path");
 const http = require("http");
 // const socketio = require("socket.io");
 const { Server } = require("socket.io");
-const { pushMessage, pushAnnouncement } = require("./utils/message");
+const {
+  pushMessage,
+  pushAnnouncement,
+  pushPinnedMessage,
+  getPinnedMessage,
+} = require("./utils/message");
 const {
   userJoinChat,
   userJoinRoom,
@@ -12,6 +17,7 @@ const {
   userLeaveRoom,
 } = require("./utils/users");
 const { clientJoin, getClients } = require("./utils/clients");
+const { create } = require("domain");
 
 const app = express();
 const server = http.createServer(app);
@@ -58,6 +64,11 @@ io.on("connection", (socket) => {
       room: user.currentRoom,
       users: getRoomUsers(user.currentRoom),
     });
+
+    io.to(user.currentRoom).emit(
+      "sendPinnedMessage",
+      getPinnedMessage(user.currentRoom)
+    );
   });
 
   // send message into room
@@ -93,6 +104,14 @@ io.on("connection", (socket) => {
       const room = user.roomList.find((room) => room === checkRoom);
       io.emit("checkRoomResult", { isJoin: true, username: user.username });
     }
+  });
+
+  // pin a message
+  socket.on("pinMessage", ({ room, message }) => {
+    const user = getCurrentUser(socket.id);
+    const msg = pushPinnedMessage(user.username, message, room);
+    // send pinned message to all users in room
+    io.to(room).emit("sendPinnedMessage", msg);
   });
 });
 

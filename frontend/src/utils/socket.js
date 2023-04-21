@@ -25,3 +25,7 @@ export const isInRoom = (room) => {
 export const leaveRoom = (room) => {
   socket.emit("leaveRoom", room);
 };
+
+export const pinMessage = (room, message) => {
+  socket.emit("pinMessage", { room, message });
+};
