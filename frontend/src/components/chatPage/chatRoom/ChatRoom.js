@@ -8,6 +8,10 @@ import {
   Menu,
   MenuItem,
   FormControl,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
 } from "@mui/material";
 import { MoreVert, PushPin } from "@mui/icons-material";
 
@@ -143,8 +147,10 @@ const ChatRoom = ({ username, currentRoom }) => {
         {pinnedMessage !== null && (
           <PinnedMessageContainer>
             <PushPin sx={{ transform: "rotate(45deg)" }} />
-            {pinnedMessage.username} : {pinnedMessage.time} {" >> "}
-            {pinnedMessage.text}
+            <PinnedMessageWrapper>
+              {pinnedMessage.username} : {pinnedMessage.time} {" >> "}
+              {pinnedMessage.text}
+            </PinnedMessageWrapper>
           </PinnedMessageContainer>
         )}
 
@@ -216,6 +222,7 @@ const ContentContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 `;
 
 const NameWrapper = styled.div`
@@ -238,6 +245,13 @@ const PinnedMessageContainer = styled.div`
   gap: 10px;
   padding-left: 5px;
   background-color: ${theme.color.gray0};
+  text-overflow: ellipsis;
+`;
+
+const PinnedMessageWrapper = styled(Typography)`
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 const RoomTitle = styled.p`
@@ -266,6 +280,7 @@ const ChatContent = styled.div`
   width: 100%;
   height: 88%;
   overflow-y: scroll;
+  overflow-x: hidden;
 `;
 
 const ModalContainer = styled.div`
@@ -273,6 +288,7 @@ const ModalContainer = styled.div`
   height: 50%;
   transform: translate(50%, 50%);
   overflow-y: scroll;
+  overflow-x: hidden;
   background-color: ${theme.color.white};
 `;
 
@@ -282,7 +298,6 @@ const ModalTitleContainer = styled.div`
   flex-display: row;
   justify-content: space-between;
   background-color: ${theme.color.primary};
-  // font-size: 2rem;
   margin: 0;
 `;
 
