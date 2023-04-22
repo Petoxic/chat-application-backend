@@ -26,8 +26,10 @@ const MainTab = (props) => {
     socket.emit("getJoinRooms", username);
   });
 
-  socket.on("joinRoomList", ({ rooms }) => {
-    setRoomList(rooms);
+  socket.on("joinRoomList", ({ name, rooms }) => {
+    if (name === username) {
+      setRoomList(rooms);
+    }
   });
 
   const renderProfile = () => (

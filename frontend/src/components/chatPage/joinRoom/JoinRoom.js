@@ -32,8 +32,10 @@ const JoinRoom = (props) => {
     socket.emit("getUnjoinRooms", username);
   });
 
-  socket.on("unjoinRoomList", ({ rooms }) => {
-    setRoomList(rooms);
+  socket.on("unjoinRoomList", ({ name, rooms }) => {
+    if (name === username) {
+      setRoomList(rooms);
+    }
   });
 
   const onJoinRoom = (room) => {
