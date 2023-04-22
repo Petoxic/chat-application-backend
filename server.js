@@ -132,12 +132,12 @@ io.on("connection", (socket) => {
 
   // get unjoin room list
   socket.on("getUnjoinRooms", (username) => {
-    io.emit("unjoinRoomList", { rooms: getUnjoinRooms(username) });
+    io.emit("unjoinRoomList", { name: username, rooms: getUnjoinRooms(username) });
   });
 
   // get join room list
   socket.on("getJoinRooms", (username) => {
-    io.emit("joinRoomList", { rooms: getJoinRooms(username) });
+    io.emit("joinRoomList", { name: username, rooms: getJoinRooms(username) });
   });
 });
 
