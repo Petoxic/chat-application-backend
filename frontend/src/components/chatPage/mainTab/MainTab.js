@@ -1,39 +1,44 @@
 import { ExpandMore } from "@mui/icons-material";
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Avatar,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { getSocket } from "../../../utils/socket";
+import { getJoinRoomList, getSocket } from "../../../utils/socket";
 import theme from "../../../utils/theme";
 
 const socket = getSocket();
 
 const MainTab = (props) => {
-  const {username} = props;
+  const { username } = props;
 
   const [roomList, setRoomList] = useState([]);
 
   useEffect(() => {
-    socket.emit("getJoinRooms", (username));
-    socket.on("joinRoomList", ({rooms}) => {
-      console.log('run');
-      console.log('rooms', rooms);
+    // socket.emit("getJoinRooms", (username));
+    socket.on("joinRoomList", ({ rooms }) => {
+      console.log("rooms", rooms);
       setRoomList(rooms);
-    })
+    });
   }, [roomList]);
 
   const renderProfile = () => (
     <ProfileContainer>
-      <Avatar/>
+      <Avatar />
       <NameWrapper>{username}</NameWrapper>
     </ProfileContainer>
-  )
+  );
 
   return (
     <MainTebContainer>
-      {renderProfile()}    
+      {renderProfile()}
       <StyledAccordion>
         <StyledAccordionSummary
-          expandIcon={<ExpandMore/>}
+          expandIcon={<ExpandMore />}
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
@@ -45,9 +50,13 @@ const MainTab = (props) => {
       </StyledAccordion>
       <StyledAccordion>
         <StyledAccordionSummary
-          expandIcon={<ExpandMore/>}
+          expandIcon={<ExpandMore />}
           aria-controls="panel2a-content"
           id="panel2a-header"
+          onClick={() => {
+            console.log("getJoinRoomList");
+            getJoinRoomList();
+          }}
         >
           <Typography>Groups</Typography>
         </StyledAccordionSummary>
@@ -58,7 +67,7 @@ const MainTab = (props) => {
         ))}
       </StyledAccordion>
     </MainTebContainer>
-  )
+  );
 };
 
 const MainTebContainer = styled.div`
@@ -73,9 +82,7 @@ const ProfileContainer = styled.div`
   align-items: center;
 `;
 
-const NameWrapper = styled(Typography)`
-
-`;
+const NameWrapper = styled(Typography)``;
 
 const StyledAccordion = styled(Accordion)`
   width: 100%;
@@ -89,7 +96,7 @@ const StyledAccordionSummary = styled(AccordionSummary)`
 `;
 
 const StyledAccordionDetails = styled(AccordionDetails)`
-  bordertop: 1px solid rgba(0, 0, 0, .125);
+  bordertop: 1px solid rgba(0, 0, 0, 0.125);
 `;
 
 export default MainTab;

@@ -1,58 +1,62 @@
-import React, { useState, useEffect } from  "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { GroupAdd, Search } from "@mui/icons-material";
-import { Button, IconButton, Paper, InputBase, Modal, Input } from "@mui/material";
 import {
-  getSocket,
-  joinRoom,
-  createRoom,
-} from "../../../utils/socket";
+  Button,
+  IconButton,
+  Paper,
+  InputBase,
+  Modal,
+  Input,
+} from "@mui/material";
+import { getSocket, joinRoom, createRoom } from "../../../utils/socket";
 
 const socket = getSocket();
 
 const mockRoomList = [
-  {name: "redroom", id: "1234"},
-  {name: "eren", id: "5678"}
-]
+  { name: "redroom", id: "1234" },
+  { name: "eren", id: "5678" },
+];
 
-const JoinRoom =  (props) => {
+const JoinRoom = (props) => {
   const { username } = props;
   const [roomList, setRoomList] = useState([]);
   const [isCreatingRoom, setCreatingRoom] = useState(false);
   const [roomName, setRoomName] = useState("...");
 
-  useEffect(() => {
-    // setRoomList(mockRoomList);
-    // get unjoin room list
-    socket.emit("getUnjoinRooms", (username))
-    socket.on("unjoinRoomList", ({ rooms }) => {
-      setRoomList(rooms);
-    });
-  }, [roomList])
+  // useEffect(() => {
+  //   // setRoomList(mockRoomList);
+  //   // get unjoin room list
+  //   socket.emit("getUnjoinRooms", username);
+  //   socket.on("unjoinRoomList", ({ rooms }) => {
+  //     setRoomList(rooms);
+  //   });
+  // }, [roomList]);
 
+  useEffect(() => {
+    socket.on("roomList", ({ unjoinRooms }) => {
+      setRoomList(unjoinRooms);
+    });
+  }, [roomList]);
 
   const onJoinRoom = (room) => {
     joinRoom(username, room);
   };
 
   const onCreateRoom = () => {
-    console.log('onCreateRoom', username, roomName);
+    console.log("onCreateRoom", username, roomName);
     createRoom(username, roomName);
-    socket.emit("getJoinRooms", (username));
   };
 
   const handleClose = () => {
     setCreatingRoom(false);
     setRoomName("");
-  }
+  };
 
   const renderSearch = () => (
     <InputWrapper>
-      <InputBase
-        sx={{ ml: 1, flex: 1 }}
-        placeholder="Search group name"
-      />
-      <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+      <InputBase sx={{ ml: 1, flex: 1 }} placeholder="Search group name" />
+      <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
         <Search />
       </IconButton>
     </InputWrapper>
@@ -73,14 +77,14 @@ const JoinRoom =  (props) => {
   //   // </Modal>
   // )
 
-  return(
+  return (
     <ContentContainer>
       <Button onClick={() => onCreateRoom()}>Create Chat Group</Button>
       {/* {renderModal()} */}
       {renderSearch()}
       {roomList.map((room) => (
         <JoinRoomWrapper>
-          {room.name} 
+          {room.name}
           <GroupAdd
             color="disabled"
             fontSize="small"
@@ -89,8 +93,8 @@ const JoinRoom =  (props) => {
         </JoinRoomWrapper>
       ))}
     </ContentContainer>
-  )
-}
+  );
+};
 
 const ContentContainer = styled.div`
   width: 100%;
@@ -108,7 +112,7 @@ const JoinRoomWrapper = styled.div`
 
 const InputWrapper = styled(Paper)`
   display: flex;
-  padding: '2px 4px';
+  padding: "2px 4px";
   align-items: center;
   margin-bottom: 10px;
   width: 100%;

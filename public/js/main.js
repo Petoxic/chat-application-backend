@@ -4,6 +4,7 @@ const roomName = document.getElementById("room-name");
 const userList = document.getElementById("users");
 
 // Get username and room from URL
+//localhost:3000/chat.html?username=abc&room=123
 const { username, room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
 });

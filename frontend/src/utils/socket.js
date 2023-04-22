@@ -12,7 +12,7 @@ export const joinRoom = (username, room) => {
 
 export const createRoom = (username, room) => {
   socket.emit("createRoom", { username, room });
-}
+};
 
 export const sendMessage = (message) => {
   socket.emit("chatMessage", message);
@@ -24,6 +24,11 @@ export const getSocket = () => {
 
 export const isInRoom = (room) => {
   socket.emit("checkRoom", room);
+};
+
+//getJoinRoomList
+export const getJoinRoomList = (username) => {
+  socket.emit("getJoinRooms", username);
 };
 
 export const leaveRoom = (room) => {
