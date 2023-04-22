@@ -7,8 +7,9 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  FormControl,
 } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { MoreVert, PushPin } from "@mui/icons-material";
 
 import theme from "../../../utils/theme";
 import MessageBubbleLeft from "./MessageBubbleLeft";
@@ -19,37 +20,18 @@ import {
   sendMessage,
   isInRoom,
   joinRoom,
+  leaveRoom,
 } from "../../../utils/socket";
 
 const socket = getSocket();
 
 const ChatRoom = ({ username, currentRoom }) => {
   const [messages, setMessages] = useState([]);
-  const [messageToSend, setMessagesToSend] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isJoinRoom, setIsJoinRoom] = useState(false);
   const [usersList, setUsersList] = useState([]);
-  const [anchorElement, setAnchorElement] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const onOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const onCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const onOpenMenu = (event) => {
-    console.log(event);
-    setAnchorElement(event.currentTarget);
-    setIsMenuOpen(true);
-  };
-
-  const onCloseMenu = () => {
-    setAnchorElement(null);
-    setIsMenuOpen(false);
-  };
+  const [pinnedMessage, setPinnedMessage] = useState(null);
 
   useEffect(() => {
     socket.on("message", (message) => {
@@ -76,11 +58,41 @@ const ChatRoom = ({ username, currentRoom }) => {
     socket.on("roomUsers", ({ users }) => {
       setUsersList(users);
     });
-  });
+  }, []);
 
-  const onSend = () => {
-    sendMessage(messageToSend);
-    setMessagesToSend("");
+  useEffect(() => {
+    socket.on("sendPinnedMessage", (message) => {
+      setPinnedMessage(message);
+    });
+  }, [pinnedMessage]);
+
+  const onOpenModal = () => {
+    setIsModalOpen(true);
+    setIsMenuOpen(false);
+  };
+
+  const onCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const onOpenMenu = () => {
+    setIsMenuOpen(true);
+  };
+
+  const onCloseMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  const onLeaveRoom = () => {
+    setIsMenuOpen(false);
+    leaveRoom(currentRoom);
+    setIsJoinRoom(false);
+  };
+
+  const onSend = (event) => {
+    event.preventDefault();
+    const message = event.target[0].value;
+    sendMessage(message);
   };
 
   const onJoinRoom = () => {
@@ -93,12 +105,6 @@ const ChatRoom = ({ username, currentRoom }) => {
       <ContentContainer>
         <NameWrapper>
           <RoomTitle>{currentRoom}</RoomTitle>
-          <Button
-            onClick={onOpenModal}
-            sx={{ backgroundColor: theme.color.white, margin: "10px" }}
-          >
-            Users List
-          </Button>
           <Modal
             open={isModalOpen}
             onClose={onCloseModal}
@@ -123,22 +129,35 @@ const ChatRoom = ({ username, currentRoom }) => {
             </ModalContainer>
           </Modal>
           <IconButton onClick={onOpenMenu}>
-            <MoreVertIcon />
+            <MoreVert />
           </IconButton>
           <Menu
             open={isMenuOpen}
             onClose={onCloseMenu}
-            anchorEl={anchorElement}
+            anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
           >
-            <MenuItem onClick={onCloseMenu}>Leave Room</MenuItem>
+            <MenuItem onClick={onLeaveRoom}>Leave Room</MenuItem>
+            <MenuItem onClick={onOpenModal}>Users List</MenuItem>
           </Menu>
         </NameWrapper>
+        {pinnedMessage !== null && (
+          <PinnedMessageContainer>
+            <PushPin sx={{ transform: "rotate(45deg)" }} />
+            {pinnedMessage.username} : {pinnedMessage.time} {" >> "}
+            {pinnedMessage.text}
+          </PinnedMessageContainer>
+        )}
+
         <ChatContent>
           {messages.map((msg) =>
             msg.username === undefined ? (
               <JoiningMessage message={msg.text} />
             ) : msg.username === username ? (
-              <MessageBubbleRight message={msg.text} time={msg.time} />
+              <MessageBubbleRight
+                message={msg.text}
+                time={msg.time}
+                room={currentRoom}
+              />
             ) : (
               <MessageBubbleLeft
                 name={msg.username}
@@ -149,26 +168,30 @@ const ChatRoom = ({ username, currentRoom }) => {
           )}
         </ChatContent>
         <MessageContainer>
-          <Input
-            value={messageToSend}
-            onChange={(e) => setMessagesToSend(e.target.value)}
-            placeholder="Enter a message"
-            disableUnderline
-            sx={{
-              fontSize: "1rem",
-              width: "85%",
-              backgroundColor: theme.color.white,
-              borderRadius: "10px",
-              margin: "10px",
-              padding: "5px 7px",
-            }}
-          />
-          <Button
-            sx={{ backgroundColor: theme.color.white, margin: "10px" }}
-            onClick={() => onSend()}
-          >
-            Send
-          </Button>
+          <FormContainer onSubmit={onSend}>
+            <FormControl variant="standard" sx={{ width: "85%" }}>
+              <Input
+                id="user-message"
+                placeholder="Enter a message"
+                disableUnderline
+                sx={{
+                  fontSize: "1rem",
+                  width: "100%",
+                  height: "80%",
+                  backgroundColor: theme.color.white,
+                  borderRadius: "10px",
+                  margin: "10px",
+                  paddingLeft: "10px",
+                }}
+              />
+            </FormControl>
+            <Button
+              type="join"
+              sx={{ backgroundColor: theme.color.white, margin: "10px" }}
+            >
+              Send
+            </Button>
+          </FormContainer>
         </MessageContainer>
       </ContentContainer>
     );
@@ -201,7 +224,20 @@ const NameWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  padding-left: 7px;
   background-color: ${theme.color.primary};
+`;
+
+const PinnedMessageContainer = styled.div`
+  width: 100%;
+  height: 6%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 1.25rem;
+  gap: 10px;
+  padding-left: 5px;
+  background-color: ${theme.color.gray0};
 `;
 
 const RoomTitle = styled.p`
@@ -215,6 +251,14 @@ const MessageContainer = styled.div`
   background-color: ${theme.color.primary};
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+`;
+
+const FormContainer = styled.form`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0;
   justify-content: space-between;
 `;
 

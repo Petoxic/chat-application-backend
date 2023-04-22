@@ -3,21 +3,50 @@ import styled from "styled-components";
 import ChatHistoryPerUser from "./ChatHistoryPerUser";
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
+import { Tab, Tabs} from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import { Paper } from "@mui/material";
 import { getSocket } from "../../../utils/socket";
 
 const socket = getSocket();
 
-const mockMessageHistories = [
-  {name: 'Pattrawut', message: 's', timestamp: '10.20pm'},
-  {name: 'Pattanan', message: 'เค', timestamp: '6.20am'},
-  {name: 'Mokha', message: 'f', timestamp: '6.20am'}
-]
-
 const ChatHistory = () => {
   const [messageHistories, setMessageHistories] = useState([]);
   const [chatRoom, setChatRoom] = useState([]);
+  const [value, setValue] = useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+  
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        style={{width: '100%'}}
+        {...other}
+      >
+        {value === index && (
+          <>
+            {children}
+          </>
+        )}
+      </div>
+    );
+  }
+
+  function a11yProps(index) {
+    return {
+      id: `simple-tab-${index}`,
+      'aria-controls': `simple-tabpanel-${index}`,
+    };
+  }
+  
 
   useEffect(() => {
     socket.on("message", (message) => {
@@ -32,24 +61,39 @@ const ChatHistory = () => {
     });
   }, []);
 
+  const renderSearch = () => (
+    <InputWrapper>
+      <InputBase
+        sx={{ ml: 1, flex: 1 }}
+        placeholder="Search chat room or message"
+      />
+      <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+        <SearchIcon />
+      </IconButton>
+    </InputWrapper>
+  )
+
   return (
     <ContentContainer>
-      <InputWrapper>
-        <InputBase
-          sx={{ ml: 1, flex: 1 }}
-          placeholder="Search chat room or message"
-        />
-        <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-          <SearchIcon />
-        </IconButton>
-      </InputWrapper>
-      {messageHistories.map((message) => (
-        <ChatHistoryPerUser 
-          name={chatRoom} 
-          message={message.text}
-          timestamp={message.time}
-        />
-      ))}
+      <StyledTabs value={value} onChange={handleChange}>
+        <Tab label="users"  {...a11yProps(0)}></Tab>
+        <Tab label="groups"  {...a11yProps(1)}></Tab>
+      </StyledTabs>
+      <TabPanel value={value} index={0}>
+        {renderSearch()}
+        users
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        {renderSearch()}
+        group
+        {messageHistories.map((message) => (
+          <ChatHistoryPerUser 
+            name={chatRoom} 
+            message={message.text}
+            timestamp={message.time}
+          />
+        ))}
+      </TabPanel>
     </ContentContainer>
   );
 };
@@ -57,12 +101,10 @@ const ChatHistory = () => {
 export default ChatHistory;
 
 const ContentContainer = styled.div`
-  // width: 440px;
-  width: 35%;
+  width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
 `;
 
 const InputWrapper = styled(Paper)`
@@ -70,6 +112,10 @@ const InputWrapper = styled(Paper)`
   padding: '2px 4px';
   align-items: center;
   margin-bottom: 10px;
-  // width: 400px;
   width: 100%;
+`;
+
+const StyledTabs = styled(Tabs)`
+  display: flex;
+  justify-content : flex-start;
 `;
