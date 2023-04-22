@@ -1,14 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "@emotion/styled";
-import { Avatar, Typography } from "@mui/material";
+import { IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import theme from "../../../utils/theme";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { pinMessage } from "../../../utils/socket";
 
-const MessageBubbleRight = ({ message, time }) => {
+const MessageBubbleRight = ({ message, time, room }) => {
+  const [isFocus, setIsFocus] = useState(false);
+  const [isOptionOpen, setIsOptionOpen] = useState(false);
+  const [anchor, setAnchor] = useState(null);
+
+  const onOpenOption = (event) => {
+    setAnchor(event.currentTarget);
+    setIsOptionOpen(true);
+  };
+
+  const onCloseOption = () => {
+    setAnchor(null);
+    setIsOptionOpen(false);
+    setIsFocus(false);
+  };
+
+  const onPinMessage = () => {
+    console.log("pinning message");
+    pinMessage(room, message);
+  };
+
   return (
     <ChatMessageContainer>
       <TextContainer>
-        <MessageContainer>
-          <TimeStamp>{time}</TimeStamp>
+        <MessageContainer
+          onMouseEnter={() => setIsFocus(true)}
+          onMouseLeave={() => setIsFocus(false)}
+        >
+          {isFocus ? (
+            <IconButton onClick={onOpenOption}>
+              <MoreVertIcon />
+            </IconButton>
+          ) : (
+            <TimeStamp>{time}</TimeStamp>
+          )}
+          <Menu open={isOptionOpen} onClose={onCloseOption} anchorEl={anchor}>
+            <MenuItem onClick={onPinMessage}>Pin Message</MenuItem>
+          </Menu>
           <MessageBubble>
             <Message>{message}</Message>
           </MessageBubble>

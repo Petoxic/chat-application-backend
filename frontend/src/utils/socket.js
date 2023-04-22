@@ -21,3 +21,11 @@ export const getSocket = () => {
 export const isInRoom = (room) => {
   socket.emit("checkRoom", room);
 };
+
+export const leaveRoom = (room) => {
+  socket.emit("leaveRoom", room);
+};
+
+export const pinMessage = (room, message) => {
+  socket.emit("pinMessage", { room, message });
+};

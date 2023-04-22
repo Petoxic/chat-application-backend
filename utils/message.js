@@ -2,6 +2,8 @@ const moment = require("moment");
 
 // messages = [ { username, text, room, time, isAnnounce }, ... ]
 const messages = [];
+// pinnedMessage = [ { username, text, room, time }, ... ]
+const pinnedMessages = [];
 
 function pushMessage(username, text, room) {
   const message = {
@@ -31,4 +33,23 @@ function pushAnnouncement(text, room) {
   return message;
 }
 
-module.exports = { pushAnnouncement, pushMessage };
+function pushPinnedMessage(username, text, room) {
+  const roomIndex = pinnedMessages.findIndex((msg) => msg.room === room);
+  if (roomIndex !== -1) {
+    pinnedMessages.splice(roomIndex, 1);
+  }
+  const msg = {
+    username,
+    text,
+    room,
+    time: moment().format("h:mm a"),
+  };
+  pinnedMessages.push(msg);
+  return msg;
+}
+
+function getPinnedMessage(room) {
+  return pinnedMessages.find((msg) => msg.room === room);
+}
+
+module.exports = { pushAnnouncement, pushMessage, pushPinnedMessage, getPinnedMessage };
