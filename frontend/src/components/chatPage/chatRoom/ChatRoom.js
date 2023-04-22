@@ -138,7 +138,7 @@ const ChatRoom = ({ username, currentRoom }) => {
           <Menu
             open={isMenuOpen}
             onClose={onCloseMenu}
-            anchorOrigin={{ horizontal: "right", vertical: "top" }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
           >
             <MenuItem onClick={onLeaveRoom}>Leave Room</MenuItem>
             <MenuItem onClick={onOpenModal}>Users List</MenuItem>

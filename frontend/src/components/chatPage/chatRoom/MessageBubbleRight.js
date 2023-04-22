@@ -87,6 +87,7 @@ const Message = styled(Typography)`
 const TimeStamp = styled(Typography)`
   font-size: 12px;
   color: ${theme.color.gray2};
+  width: 100%;
 `;
 
 export default MessageBubbleRight;
