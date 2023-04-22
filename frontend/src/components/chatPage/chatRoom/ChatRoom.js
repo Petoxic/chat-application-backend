@@ -266,6 +266,7 @@ const ChatContent = styled.div`
   width: 100%;
   height: 88%;
   overflow-y: scroll;
+  overflow-x: hidden;
 `;
 
 const ModalContainer = styled.div`
@@ -273,6 +274,7 @@ const ModalContainer = styled.div`
   height: 50%;
   transform: translate(50%, 50%);
   overflow-y: scroll;
+  overflow-x: hidden;
   background-color: ${theme.color.white};
 `;
 

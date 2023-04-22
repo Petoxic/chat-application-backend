@@ -60,6 +60,7 @@ const ChatMessageContainer = styled.div`
 `;
 
 const TextContainer = styled.div`
+  max-width: 50%;
   display: flex;
   flex-direction: column;
   margin-right: 6px;
@@ -80,6 +81,7 @@ const MessageBubble = styled.div`
 
 const Message = styled(Typography)`
   font-size: 14px;
+  word-break: break-word;
 `;
 
 const TimeStamp = styled(Typography)`
