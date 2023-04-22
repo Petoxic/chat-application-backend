@@ -4,6 +4,7 @@ import { Chat, GroupAdd, Person } from '@mui/icons-material';
 import styled from "styled-components";
 import ChatHistory from "../chatPage/chatHistory/ChatHistory";
 import JoinRoom from "../chatPage/joinRoom/JoinRoom";
+import MainTab from "../chatPage/mainTab/MainTab";
 
 const NaveBarContainer = styled.div`
   margin-top: 2%;
@@ -13,7 +14,8 @@ const NaveBarContainer = styled.div`
   flex-direction: column;
 `;
 
-const NavBar = () => {
+const NavBar = (props) => {
+  const {username} = props;
   const [value, setValue] = useState(0);
 
   function TabPanel(props) {
@@ -56,13 +58,13 @@ const NavBar = () => {
         </Tabs>
       </NaveBarContainer>
       <TabPanel value={value} index={0}>
-        c
+        <MainTab username={username}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
         <ChatHistory/>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <JoinRoom/>
+        <JoinRoom username={username}/>
       </TabPanel>
     </>
   );

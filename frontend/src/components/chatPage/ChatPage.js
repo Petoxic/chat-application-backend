@@ -20,9 +20,7 @@ const ChatPage = () => {
 
   return (
     <ContentContainer>
-      {/* <Button onClick={changeRoom}>Change Room!</Button> */}
-      <NavBar/>
-      {/* <ChatHistory /> */}
+      <NavBar username={location.state.username} currentRoom={currentRoom} />
       <ChatRoom username={location.state.username} currentRoom={currentRoom} />
     </ContentContainer>
   );
