@@ -79,14 +79,13 @@ io.on("connection", (socket) => {
     );
   });
 
-  
   // send message into room
   socket.on("chatMessage", (msg) => {
     const user = getCurrentUser(socket.id);
     const message = pushMessage(user.username, msg, user.currentRoom);
     io.to(user.currentRoom).emit("message", message);
   });
-  
+
   // leave room
   socket.on("leaveRoom", (room) => {
     const user = userLeaveRoom(socket.id, room);
@@ -94,49 +93,50 @@ io.on("connection", (socket) => {
       io.to(room).emit(
         "message",
         pushAnnouncement(`${user.username} Pai la ja`, room)
-        );
-        
-        io.to(room).emit("roomUsers", {
-          room: user.currentRoom,
-          users: getRoomUsers(room),
-        });
-      }
-    });
-    
-    // check if user is in that room or not
-    socket.on("checkRoom", (checkRoom) => {
-      const user = getCurrentUser(socket.id);
-      if (user === undefined) {
-        // return search result
-        io.emit("checkRoomResult", { isJoin: false, username: user.username });
-      } else {
-        const room = user.roomList.find((room) => room === checkRoom);
-        io.emit("checkRoomResult", { isJoin: true, username: user.username });
-      }
-    });
-    
-    // pin a message
-    socket.on("pinMessage", ({ room, message }) => {
-      const user = getCurrentUser(socket.id);
-      const msg = pushPinnedMessage(user.username, message, room);
-      // send pinned message to all users in room
-      io.to(room).emit("sendPinnedMessage", msg);
-    });
-    
-    // create room
-    socket.on("createRoom", ({ username, room }) => {
-      const user = userJoinRoom(socket.id, username, room);
-      createRoom(username, room);
-      io.emit("roomList", { rooms: getRooms() });
-    });
+      );
+
+      io.to(room).emit("roomUsers", {
+        room: user.currentRoom,
+        users: getRoomUsers(room),
+      });
+    }
+  });
+
+  // check if user is in that room or not
+  socket.on("checkRoom", (checkRoom) => {
+    const user = getCurrentUser(socket.id);
+    if (user === undefined) {
+      // return search result
+      io.emit("checkRoomResult", { isJoin: false, username: user.username });
+    } else {
+      const room = user.roomList.find((room) => room === checkRoom);
+      io.emit("checkRoomResult", { isJoin: true, username: user.username });
+    }
+  });
+
+  // pin a message
+  socket.on("pinMessage", ({ room, message }) => {
+    const user = getCurrentUser(socket.id);
+    const msg = pushPinnedMessage(user.username, message, room);
+    // send pinned message to all users in room
+    io.to(room).emit("sendPinnedMessage", msg);
+  });
+
+  // create room
+  socket.on("createRoom", ({ username, room }) => {
+    const user = userJoinRoom(socket.id, username, room);
+    createRoom(username, room);
+    // io.emit("roomList", { rooms: getRooms() });
+    io.emit("roomCreated");
+  });
 
   // get unjoin room list
-  socket.on("getUnjoinRooms", ({ username }) => {
+  socket.on("getUnjoinRooms", (username) => {
     io.emit("unjoinRoomList", { rooms: getUnjoinRooms(username) });
   });
 
   // get join room list
-  socket.on("getJoinRooms", ({ username }) => {
+  socket.on("getJoinRooms", (username) => {
     io.emit("joinRoomList", { rooms: getJoinRooms(username) });
   });
 });

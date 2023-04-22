@@ -18,14 +18,14 @@ function getRooms() {
 
 function getUnjoinRooms(username) {
   const unjoinRooms = rooms.filter((room) => {
-    room.users.find((user) => user === username) === undefined;
+    return room.users.find((user) => user === username) === undefined;
   });
   return unjoinRooms;
 }
 
 function getJoinRooms(username) {
   const joinRooms = rooms.filter((room) => {
-    room.users.find((user) => user === username) !== undefined;
+    return room.users.find((user) => user === username) !== undefined;
   });
   return joinRooms;
 }
