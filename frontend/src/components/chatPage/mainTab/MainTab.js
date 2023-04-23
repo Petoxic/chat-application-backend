@@ -1,4 +1,4 @@
-import { ExpandMore } from "@mui/icons-material";
+import { Chat, ExpandMore } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -8,13 +8,13 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { getSocket } from "../../../utils/socket";
+import { getSocket, joinRoom, leaveRoom } from "../../../utils/socket";
 import theme from "../../../utils/theme";
 
 const socket = getSocket();
 
 const MainTab = (props) => {
-  const { username } = props;
+  const { username, changeRoom } = props;
 
   const [roomList, setRoomList] = useState([]);
 
@@ -31,6 +31,10 @@ const MainTab = (props) => {
       setRoomList(rooms);
     }
   });
+
+  const onJoinRoom = (room) => {
+    changeRoom(room);
+  };
 
   const renderProfile = () => (
     <ProfileContainer>
@@ -62,9 +66,10 @@ const MainTab = (props) => {
         >
           <Typography>Groups</Typography>
         </StyledAccordionSummary>
-        {roomList.map((room) => (
-          <StyledAccordionDetails>
+        {roomList.map((room, idx) => (
+          <StyledAccordionDetails key={idx}>
             <Typography>{room.roomName}</Typography>
+            <Chat sx={{color: `${theme.color.gray2}`}} onClick={() => onJoinRoom(room.roomName)}/>
           </StyledAccordionDetails>
         ))}
       </StyledAccordion>
@@ -95,10 +100,13 @@ const StyledAccordion = styled(Accordion)`
 
 const StyledAccordionSummary = styled(AccordionSummary)`
   background-color: ${theme.color.gray0};
+  border-radius: 0px;
 `;
 
 const StyledAccordionDetails = styled(AccordionDetails)`
-  bordertop: 1px solid rgba(0, 0, 0, 0.125);
+  display: flex;
+  justify-content: space-between;
+  border-radius: 0px;
 `;
 
 export default MainTab;

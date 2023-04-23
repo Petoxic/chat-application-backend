@@ -15,7 +15,7 @@ const NaveBarContainer = styled.div`
 `;
 
 const NavBar = (props) => {
-  const {username} = props;
+  const {username, currentRoom, setCurrentRoom, changeRoom} = props;
   const [value, setValue] = useState(0);
 
   function TabPanel(props) {
@@ -58,7 +58,7 @@ const NavBar = (props) => {
         </Tabs>
       </NaveBarContainer>
       <TabPanel value={value} index={0}>
-        <MainTab username={username}/>
+        <MainTab username={username} setCurrentRoom={setCurrentRoom} changeRoom={changeRoom}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
         <ChatHistory/>

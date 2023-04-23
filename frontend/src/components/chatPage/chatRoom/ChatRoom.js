@@ -13,7 +13,7 @@ import {
   AccordionDetails,
   Typography,
 } from "@mui/material";
-import { MoreVert, PushPin } from "@mui/icons-material";
+import { Chat, ChatOutlined, MoreVert, PushPin } from "@mui/icons-material";
 
 import theme from "../../../utils/theme";
 import MessageBubbleLeft from "./MessageBubbleLeft";
@@ -37,26 +37,36 @@ const ChatRoom = ({ username, currentRoom }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [pinnedMessage, setPinnedMessage] = useState(null);
 
-  useEffect(() => {
-    socket.on("message", (message) => {
-      console.log(message);
-      setMessages([...messages, message]);
-      console.log("all Messages", messages);
-    });
-  }, [messages]);
+  console.log('currentRoom', currentRoom);
 
   useEffect(() => {
-    isInRoom(currentRoom);
-    socket.on("checkRoomResult", ({ isJoin, name }) => {
-      if (name === username) {
-        if (isJoin) {
-          setIsJoinRoom(true);
-        } else {
-          setIsJoinRoom(false);
-        }
-      }
+    socket.on("message", (message) => {
+      console.log('currentRoom', currentRoom);
+      // if(message.room === currentRoom) {
+        setMessages([...messages, message]);
+        console.log("all Messages", messages);
+      // }
     });
-  }, [currentRoom]);
+  }, [messages, currentRoom]);
+
+  // useEffect(() => {
+  //   isInRoom(currentRoom);
+  //   socket.on("checkRoomResult", ({ isJoin, name }) => {
+  //     if (name === username) {
+  //       if (isJoin) {
+  //         setIsJoinRoom(true);
+  //       } else {
+  //         setIsJoinRoom(false);
+  //       }
+  //     }
+  //   });
+  // }, [currentRoom, username]);
+
+  useEffect(() => {
+    if(currentRoom) {
+      setIsJoinRoom(true);
+    }
+  }, [currentRoom])
 
   useEffect(() => {
     socket.on("roomUsers", ({ users }) => {
@@ -203,26 +213,39 @@ const ChatRoom = ({ username, currentRoom }) => {
     );
   };
 
-  const JoinPage = () => {
+  const NotChatPage = () => {
     return (
-      <ContentContainer>
-        <div>{currentRoom}</div>
-        <Button onClick={onJoinRoom}>Join</Button>
-      </ContentContainer>
+      <NotChatPageContainer>
+        <ChatOutlined
+          color="primary"
+          sx={{fontSize: 200}}
+        />
+        <Typography variant="h3">Join room to start chatting!!</Typography>
+      </NotChatPageContainer>
     );
   };
 
-  return <>{isJoinRoom ? <ChatPage /> : <JoinPage />}</>;
+  return <>{isJoinRoom ? <ChatPage /> : <NotChatPage />}</>;
 };
 
 export default ChatRoom;
 
 const ContentContainer = styled.div`
-  width: 65%;
+  width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+`;
+
+const NotChatPageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  gap: 5%;
 `;
 
 const NameWrapper = styled.div`
