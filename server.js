@@ -22,6 +22,7 @@ const {
   getRooms,
   getJoinRooms,
   getUnjoinRooms,
+  leaveRoom,
 } = require("./utils/rooms");
 const { clientJoin, getClients } = require("./utils/clients");
 const { create } = require("domain");
@@ -54,29 +55,33 @@ io.on("connection", (socket) => {
   // join the chat room
   socket.on("joinRoom", ({ username, room }) => {
     const client = clientJoin(socket.id, username);
-    const user = userJoinRoom(socket.id, username, room);
+    // insert room into roomList
+    const { user, isFirstTime } = userJoinRoom(socket.id, username, room);
+    // insert user into room.users
     joinRoom(username, room);
 
     socket.join(user.currentRoom);
 
-    const message = pushAnnouncement(
-      `${user.username} Ma laew ja`,
-      user.currentRoom
-    );
+    if (isFirstTime) {
+      const message = pushAnnouncement(
+        `${user.username} Ma laew ja`,
+        user.currentRoom
+      );
 
-    // send message to everyone in room
-    io.to(user.currentRoom).emit("message", message);
+      // send message to everyone in room
+      io.to(user.currentRoom).emit("message", message);
 
-    // resend list of users in room
-    io.to(user.currentRoom).emit("roomUsers", {
-      room: user.currentRoom,
-      users: getRoomUsers(user.currentRoom),
-    });
+      // resend list of users in room
+      io.to(user.currentRoom).emit("roomUsers", {
+        room: user.currentRoom,
+        users: getRoomUsers(user.currentRoom),
+      });
 
-    io.to(user.currentRoom).emit(
-      "sendPinnedMessage",
-      getPinnedMessage(user.currentRoom)
-    );
+      io.to(user.currentRoom).emit(
+        "sendPinnedMessage",
+        getPinnedMessage(user.currentRoom)
+      );
+    }
   });
 
   // send message into room
@@ -89,6 +94,7 @@ io.on("connection", (socket) => {
   // leave room
   socket.on("leaveRoom", (room) => {
     const user = userLeaveRoom(socket.id, room);
+    leaveRoom(user.username, room);
     if (user) {
       io.to(room).emit(
         "message",
@@ -98,6 +104,11 @@ io.on("connection", (socket) => {
       io.to(room).emit("roomUsers", {
         room: user.currentRoom,
         users: getRoomUsers(room),
+      });
+
+      io.emit("joinRoomList", {
+        name: user.username,
+        rooms: getJoinRooms(user.username),
       });
     }
   });
@@ -124,7 +135,7 @@ io.on("connection", (socket) => {
 
   // create room
   socket.on("createRoom", ({ username, room }) => {
-    const user = userJoinRoom(socket.id, username, room);
+    const { user, isFirstTime } = userJoinRoom(socket.id, username, room);
     createRoom(username, room);
     // io.emit("roomList", { rooms: getRooms() });
     io.emit("roomCreated");
@@ -132,7 +143,10 @@ io.on("connection", (socket) => {
 
   // get unjoin room list
   socket.on("getUnjoinRooms", (username) => {
-    io.emit("unjoinRoomList", { name: username, rooms: getUnjoinRooms(username) });
+    io.emit("unjoinRoomList", {
+      name: username,
+      rooms: getUnjoinRooms(username),
+    });
   });
 
   // get join room list

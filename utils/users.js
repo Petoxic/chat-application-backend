@@ -4,6 +4,7 @@ const users = [];
 // Join user to room
 function userJoinRoom(id, username, selectedRoom) {
   // const user = { id, username, room };
+  let isFirstTime;
 
   const user = users.find(
     (user) => user.id === id && user.username === username
@@ -13,11 +14,14 @@ function userJoinRoom(id, username, selectedRoom) {
     const room = user.roomList.find((roomName) => roomName === selectedRoom);
     if (room === undefined) {
       user.roomList = [...user.roomList, selectedRoom];
+      isFirstTime = true;
+    } else {
+      isFirstTime = false;
     }
     user.currentRoom = selectedRoom;
   }
 
-  return user;
+  return { user, isFirstTime };
 }
 
 // Join user to chat
@@ -51,9 +55,12 @@ function userLeaveRoom(id, room) {
     if (roomIndex !== -1) {
       user.roomList.splice(roomIndex, 1);
       user.currentRoom = "";
+      console.log(user);
       return user;
     }
   }
+  console.log(user);
+  return user;
 }
 
 // Get room users
