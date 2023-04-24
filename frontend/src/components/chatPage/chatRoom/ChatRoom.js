@@ -37,14 +37,14 @@ const ChatRoom = ({ username, currentRoom }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [pinnedMessage, setPinnedMessage] = useState(null);
 
-  console.log('currentRoom', currentRoom);
+  console.log("currentRoom", currentRoom);
 
   useEffect(() => {
     socket.on("message", (message) => {
-      console.log('currentRoom', currentRoom);
+      console.log("currentRoom", currentRoom);
       // if(message.room === currentRoom) {
-        setMessages([...messages, message]);
-        console.log("all Messages", messages);
+      setMessages([...messages, message]);
+      console.log("all Messages", messages);
       // }
     });
   }, [messages, currentRoom]);
@@ -63,10 +63,10 @@ const ChatRoom = ({ username, currentRoom }) => {
   // }, [currentRoom, username]);
 
   useEffect(() => {
-    if(currentRoom) {
+    if (currentRoom) {
       setIsJoinRoom(true);
     }
-  }, [currentRoom])
+  }, [currentRoom]);
 
   useEffect(() => {
     socket.on("roomUsers", ({ users }) => {
@@ -148,7 +148,7 @@ const ChatRoom = ({ username, currentRoom }) => {
           <Menu
             open={isMenuOpen}
             onClose={onCloseMenu}
-            anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: "right", vertical: "top" }}
           >
             <MenuItem onClick={onLeaveRoom}>Leave Room</MenuItem>
             <MenuItem onClick={onOpenModal}>Users List</MenuItem>
@@ -166,21 +166,23 @@ const ChatRoom = ({ username, currentRoom }) => {
 
         <ChatContent>
           {messages.map((msg) =>
-            msg.username === undefined ? (
-              <JoiningMessage message={msg.text} />
-            ) : msg.username === username ? (
-              <MessageBubbleRight
-                message={msg.text}
-                time={msg.time}
-                room={currentRoom}
-              />
-            ) : (
-              <MessageBubbleLeft
-                name={msg.username}
-                message={msg.text}
-                time={msg.time}
-              />
-            )
+            msg.room === currentRoom ? (
+              msg.username === undefined ? (
+                <JoiningMessage message={msg.text} />
+              ) : msg.username === username ? (
+                <MessageBubbleRight
+                  message={msg.text}
+                  time={msg.time}
+                  room={currentRoom}
+                />
+              ) : (
+                <MessageBubbleLeft
+                  name={msg.username}
+                  message={msg.text}
+                  time={msg.time}
+                />
+              )
+            ) : null
           )}
         </ChatContent>
         <MessageContainer>
@@ -216,10 +218,7 @@ const ChatRoom = ({ username, currentRoom }) => {
   const NotChatPage = () => {
     return (
       <NotChatPageContainer>
-        <ChatOutlined
-          color="primary"
-          sx={{fontSize: 200}}
-        />
+        <ChatOutlined color="primary" sx={{ fontSize: 200 }} />
         <Typography variant="h3">Join room to start chatting!!</Typography>
       </NotChatPageContainer>
     );

@@ -12,9 +12,9 @@ const ChatPage = () => {
 
   const changeRoom = (room) => {
     console.log('room', room, currentRoom);
-    if(currentRoom) {
-      leaveRoom(location.state.username, currentRoom);
-    }
+    // if(currentRoom) {
+    //   leaveRoom(location.state.username, currentRoom);
+    // }
     joinRoom(location.state.username, room);
     setCurrentRoom(room);
   };
