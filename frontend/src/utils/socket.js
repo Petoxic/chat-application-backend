@@ -41,3 +41,7 @@ export const getPinnedMessage = (room) => {
 export const getUsersInRoom = (room) => {
   socket.emit("getUsersInRoom", room);
 };
+
+export const getAllUsers = () => {
+  socket.emit("getAllUsers");
+};

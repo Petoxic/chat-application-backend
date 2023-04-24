@@ -17,9 +17,11 @@ const MainTab = (props) => {
   const { username, changeRoom } = props;
 
   const [roomList, setRoomList] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     socket.emit("getJoinRooms", username);
+    socket.emit("getAllUsers");
   }, []);
 
   socket.on("roomCreated", () => {
@@ -30,6 +32,10 @@ const MainTab = (props) => {
     if (name === username) {
       setRoomList(rooms);
     }
+  });
+
+  socket.on("sendAllUsers", (users) => {
+    setUsers(users);
   });
 
   const onJoinRoom = (room) => {
@@ -54,9 +60,11 @@ const MainTab = (props) => {
         >
           <Typography>Users</Typography>
         </StyledAccordionSummary>
-        <StyledAccordionDetails>
-          <Typography>User</Typography>
-        </StyledAccordionDetails>
+        {users.map((user, idx) => (
+          <StyledAccordionDetails key={idx}>
+            <Typography>{user.username}</Typography>
+          </StyledAccordionDetails>
+        ))}
       </StyledAccordion>
       <StyledAccordion>
         <StyledAccordionSummary
@@ -69,7 +77,10 @@ const MainTab = (props) => {
         {roomList.map((room, idx) => (
           <StyledAccordionDetails key={idx}>
             <Typography>{room.roomName}</Typography>
-            <Chat sx={{color: `${theme.color.gray2}`}} onClick={() => onJoinRoom(room.roomName)}/>
+            <Chat
+              sx={{ color: `${theme.color.gray2}` }}
+              onClick={() => onJoinRoom(room.roomName)}
+            />
           </StyledAccordionDetails>
         ))}
       </StyledAccordion>

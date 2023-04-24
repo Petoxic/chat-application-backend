@@ -15,6 +15,8 @@ const {
   getCurrentUser,
   getRoomUsers,
   userLeaveRoom,
+  getAllUsers,
+  userLeaveChat,
 } = require("./utils/users");
 const {
   createRoom,
@@ -50,6 +52,7 @@ io.on("connection", (socket) => {
   // join the chat page
   socket.on("joinChat", (username) => {
     userJoinChat(socket.id, username);
+    io.emit("sendAllUsers", getAllUsers());
   });
 
   // join the chat room
@@ -170,6 +173,16 @@ io.on("connection", (socket) => {
       room: room,
       users: getRoomUsers(room),
     });
+  });
+
+  socket.on("getAllUsers", () => {
+    io.emit("sendAllUsers", getAllUsers());
+  });
+
+  // users disconnect from website
+  socket.on("disconnect", () => {
+    const u = userLeaveChat(socket.id);
+    io.emit("sendAllUsers", getAllUsers());
   });
 });
 

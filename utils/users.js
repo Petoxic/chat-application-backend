@@ -46,7 +46,7 @@ function getCurrentUser(id) {
   return users.find((user) => user.id === id);
 }
 
-// User leaves chat
+// User leaves room
 function userLeaveRoom(id, room) {
   const user = users.find((user) => user.id === id);
 
@@ -63,11 +63,24 @@ function userLeaveRoom(id, room) {
   return user;
 }
 
+// User leaves chat
+function userLeaveChat(id) {
+  const userIdx = users.findIndex((user) => user.id === id);
+  if (userIdx !== -1) {
+    users.splice(userIdx, 1);
+  }
+  return users;
+}
+
 // Get room users
 function getRoomUsers(room) {
   return users.filter(
     (user) => user.roomList.find((r) => r === room) !== undefined
   );
+}
+
+function getAllUsers() {
+  return users;
 }
 
 module.exports = {
@@ -76,4 +89,6 @@ module.exports = {
   getRoomUsers,
   userJoinChat,
   userJoinRoom,
+  getAllUsers,
+  userLeaveChat,
 };
