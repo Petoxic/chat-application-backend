@@ -4,6 +4,7 @@ const users = [];
 // Join user to room
 function userJoinRoom(id, username, selectedRoom) {
   // const user = { id, username, room };
+  let isFirstTime;
 
   const user = users.find(
     (user) => user.id === id && user.username === username
@@ -13,11 +14,14 @@ function userJoinRoom(id, username, selectedRoom) {
     const room = user.roomList.find((roomName) => roomName === selectedRoom);
     if (room === undefined) {
       user.roomList = [...user.roomList, selectedRoom];
+      isFirstTime = true;
+    } else {
+      isFirstTime = false;
     }
     user.currentRoom = selectedRoom;
   }
 
-  return user;
+  return { user, isFirstTime };
 }
 
 // Join user to chat
@@ -42,7 +46,7 @@ function getCurrentUser(id) {
   return users.find((user) => user.id === id);
 }
 
-// User leaves chat
+// User leaves room
 function userLeaveRoom(id, room) {
   const user = users.find((user) => user.id === id);
 
@@ -51,9 +55,21 @@ function userLeaveRoom(id, room) {
     if (roomIndex !== -1) {
       user.roomList.splice(roomIndex, 1);
       user.currentRoom = "";
+      console.log(user);
       return user;
     }
   }
+  console.log(user);
+  return user;
+}
+
+// User leaves chat
+function userLeaveChat(id) {
+  const userIdx = users.findIndex((user) => user.id === id);
+  if (userIdx !== -1) {
+    users.splice(userIdx, 1);
+  }
+  return users;
 }
 
 // Get room users
@@ -63,10 +79,24 @@ function getRoomUsers(room) {
   );
 }
 
+function getAllUsers() {
+  return users;
+}
+
+function userGoDirectMessage(id) {
+  const user = users.find((u) => u.id === id);
+  if (user !== undefined) {
+    user.currentRoom = "";
+  }
+}
+
 module.exports = {
   getCurrentUser,
   userLeaveRoom,
   getRoomUsers,
   userJoinChat,
   userJoinRoom,
+  getAllUsers,
+  userLeaveChat,
+  userGoDirectMessage,
 };

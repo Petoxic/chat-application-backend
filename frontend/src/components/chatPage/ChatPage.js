@@ -1,27 +1,74 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "@emotion/styled";
-import ChatHistory from "./chatHistory/ChatHistory";
 import ChatRoom from "./chatRoom/ChatRoom";
+import DirectMessageRoom from "./chatRoom/DirectMessageRoom";
 import { useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
 import NavBar from "../navBar/NavBar";
+import { getSocket, joinRoom, leaveRoom } from "../../utils/socket";
+
+const socket = getSocket();
 
 const ChatPage = () => {
-  const [currentRoom, setCurrentRoom] = useState("test1");
+  const [currentTarget, setCurrentTarget] = useState(null);
+  const [isDirectMessage, setIsDirectMessage] = useState(false);
+  const [groupMessage, setGroupMessage] = useState([]);
+  const [directMessage, setDirectMessage] = useState([]);
   const location = useLocation();
 
-  // const changeRoom = () => {
-  //   if (currentRoom === "test1") {
-  //     setCurrentRoom("test4");
-  //   } else {
-  //     setCurrentRoom("test1");
-  //   }
-  // };
+  useEffect(() => {
+    socket.on("sendDirectMessage", (message) => {
+      const sender = message.sender;
+      const receiver = message.receiver;
+      if (
+        sender === location.state.username ||
+        receiver === location.state.username
+      ) {
+        setDirectMessage([...directMessage, message]);
+      }
+    });
+  }, [directMessage]);
+
+  const changeRoom = (target, isDirect) => {
+    if (isDirect) {
+      setIsDirectMessage(true);
+    } else {
+      setIsDirectMessage(false);
+      joinRoom(location.state.username, target);
+    }
+    setCurrentTarget(target);
+  };
+
+  console.log("directMessage", directMessage);
+  console.log("groupMessage", groupMessage);
+
+  const direct = () => {
+    return (
+      <DirectMessageRoom
+        username={location.state.username}
+        talker={currentTarget}
+        messages={directMessage}
+        setMessages={setDirectMessage}
+      />
+    );
+  };
+
+  const room = () => {
+    return (
+      <ChatRoom
+        username={location.state.username}
+        currentRoom={currentTarget}
+        messages={groupMessage}
+        setMessages={setGroupMessage}
+      />
+    );
+  };
 
   return (
     <ContentContainer>
-      <NavBar username={location.state.username} currentRoom={currentRoom} />
-      <ChatRoom username={location.state.username} currentRoom={currentRoom} />
+      <NavBar username={location.state.username} changeRoom={changeRoom} />
+      {isDirectMessage && direct()}
+      {!isDirectMessage && room()}
     </ContentContainer>
   );
 };

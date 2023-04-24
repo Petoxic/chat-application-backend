@@ -15,6 +15,8 @@ const {
   getCurrentUser,
   getRoomUsers,
   userLeaveRoom,
+  getAllUsers,
+  userLeaveChat,
 } = require("./utils/users");
 const {
   createRoom,
@@ -22,9 +24,11 @@ const {
   getRooms,
   getJoinRooms,
   getUnjoinRooms,
+  leaveRoom,
 } = require("./utils/rooms");
 const { clientJoin, getClients } = require("./utils/clients");
 const { create } = require("domain");
+const { pushDirectMessage } = require("./utils/directMessage");
 
 const app = express();
 const server = http.createServer(app);
@@ -49,34 +53,38 @@ io.on("connection", (socket) => {
   // join the chat page
   socket.on("joinChat", (username) => {
     userJoinChat(socket.id, username);
+    io.emit("sendAllUsers", getAllUsers());
   });
 
   // join the chat room
   socket.on("joinRoom", ({ username, room }) => {
     const client = clientJoin(socket.id, username);
-    const user = userJoinRoom(socket.id, username, room);
+    // insert room into roomList
+    const { user, isFirstTime } = userJoinRoom(socket.id, username, room);
+    // insert user into room.users
     joinRoom(username, room);
 
     socket.join(user.currentRoom);
 
-    const message = pushAnnouncement(
-      `${user.username} Ma laew ja`,
-      user.currentRoom
-    );
+    if (isFirstTime) {
+      const message = pushAnnouncement(
+        `${user.username} Ma laew ja`,
+        user.currentRoom
+      );
 
-    // send message to everyone in room
-    io.to(user.currentRoom).emit("message", message);
+      // send message to everyone in room
+      io.emit("message", message);
 
-    // resend list of users in room
-    io.to(user.currentRoom).emit("roomUsers", {
-      room: user.currentRoom,
-      users: getRoomUsers(user.currentRoom),
-    });
+      io.emit("roomUsers", {
+        room: user.currentRoom,
+        users: getRoomUsers(user.currentRoom),
+      });
 
-    io.to(user.currentRoom).emit(
-      "sendPinnedMessage",
-      getPinnedMessage(user.currentRoom)
-    );
+      io.to(user.currentRoom).emit(
+        "sendPinnedMessage",
+        getPinnedMessage(user.currentRoom)
+      );
+    }
   });
 
   // send message into room
@@ -86,9 +94,15 @@ io.on("connection", (socket) => {
     io.to(user.currentRoom).emit("message", message);
   });
 
+  socket.on("chatDirectMessage", ({ username, talker, message }) => {
+    const msg = pushDirectMessage(username, talker, message);
+    io.emit("sendDirectMessage", msg);
+  });
+
   // leave room
   socket.on("leaveRoom", (room) => {
     const user = userLeaveRoom(socket.id, room);
+    leaveRoom(user.username, room);
     if (user) {
       io.to(room).emit(
         "message",
@@ -98,6 +112,11 @@ io.on("connection", (socket) => {
       io.to(room).emit("roomUsers", {
         room: user.currentRoom,
         users: getRoomUsers(room),
+      });
+
+      io.emit("joinRoomList", {
+        name: user.username,
+        rooms: getJoinRooms(user.username),
       });
     }
   });
@@ -122,9 +141,14 @@ io.on("connection", (socket) => {
     io.to(room).emit("sendPinnedMessage", msg);
   });
 
+  socket.on("getPinnedMessage", (room) => {
+    const msg = getPinnedMessage(room);
+    io.to(room).emit("sendPinnedMessage", msg);
+  });
+
   // create room
   socket.on("createRoom", ({ username, room }) => {
-    const user = userJoinRoom(socket.id, username, room);
+    const { user, isFirstTime } = userJoinRoom(socket.id, username, room);
     createRoom(username, room);
     // io.emit("roomList", { rooms: getRooms() });
     io.emit("roomCreated");
@@ -132,12 +156,33 @@ io.on("connection", (socket) => {
 
   // get unjoin room list
   socket.on("getUnjoinRooms", (username) => {
-    io.emit("unjoinRoomList", { name: username, rooms: getUnjoinRooms(username) });
+    io.emit("unjoinRoomList", {
+      name: username,
+      rooms: getUnjoinRooms(username),
+    });
   });
 
   // get join room list
   socket.on("getJoinRooms", (username) => {
     io.emit("joinRoomList", { name: username, rooms: getJoinRooms(username) });
+  });
+
+  // get users list in room
+  socket.on("getUsersInRoom", (room) => {
+    io.to(room).emit("roomUsers", {
+      room: room,
+      users: getRoomUsers(room),
+    });
+  });
+
+  socket.on("getAllUsers", () => {
+    io.emit("sendAllUsers", getAllUsers());
+  });
+
+  // users disconnect from website
+  socket.on("disconnect", () => {
+    const u = userLeaveChat(socket.id);
+    io.emit("sendAllUsers", getAllUsers());
   });
 });
 

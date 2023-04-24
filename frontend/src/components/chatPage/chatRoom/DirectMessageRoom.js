@@ -1,18 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import {
-  Input,
-  Button,
-  Modal,
-  IconButton,
-  Menu,
-  MenuItem,
-  FormControl,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
+import { Input, Button, FormControl, Typography } from "@mui/material";
 import { Chat, ChatOutlined, MoreVert, PushPin } from "@mui/icons-material";
 
 import theme from "../../../utils/theme";
@@ -21,169 +9,50 @@ import MessageBubbleRight from "./MessageBubbleRight";
 import JoiningMessage from "./JoiningMessage";
 import {
   getSocket,
-  sendMessage,
-  isInRoom,
-  joinRoom,
-  leaveRoom,
-  getUsersInRoom,
   getPinnedMessage,
+  sendDirectMessage,
 } from "../../../utils/socket";
 
 const socket = getSocket();
 
-const ChatRoom = ({ username, currentRoom, messages, setMessages }) => {
+const DirectMessageRoom = ({ username, talker, messages, setMessages }) => {
   // const [messages, setMessages] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isJoinRoom, setIsJoinRoom] = useState(false);
-  const [usersList, setUsersList] = useState([]);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [pinnedMessage, setPinnedMessage] = useState(null);
-
-  console.log("currentRoom now", currentRoom);
-
-  useEffect(() => {
-    socket.on("message", (message) => {
-      // if(message.room === currentRoom) {
-      setMessages([...messages, message]);
-      // }
-    });
-  }, [messages, currentRoom]);
 
   // useEffect(() => {
-  //   isInRoom(currentRoom);
-  //   socket.on("checkRoomResult", ({ isJoin, name }) => {
-  //     if (name === username) {
-  //       if (isJoin) {
-  //         setIsJoinRoom(true);
-  //       } else {
-  //         setIsJoinRoom(false);
-  //       }
+  //   socket.on("sendDirectMessage", (message) => {
+  //     const sender = message.sender;
+  //     const receiver = message.receiver;
+  //     if (
+  //       (sender === username || sender === talker) &&
+  //       (receiver === username || receiver === talker)
+  //     ) {
+  //       setMessages([...messages, message]);
   //     }
   //   });
-  // }, [currentRoom, username]);
-
-  useEffect(() => {
-    if (currentRoom) {
-      setIsJoinRoom(true);
-    }
-  }, [currentRoom]);
-
-  useEffect(() => {
-    socket.on("roomUsers", ({ room, users }) => {
-      if (room === currentRoom) {
-        setUsersList(users);
-      }
-    });
-  }, [currentRoom]);
-
-  useEffect(() => {
-    getUsersInRoom(currentRoom);
-  }, [currentRoom]);
-
-  useEffect(() => {
-    socket.on("sendPinnedMessage", (message) => {
-      setPinnedMessage(message);
-    });
-  }, [pinnedMessage]);
-
-  useEffect(() => {
-    getPinnedMessage(currentRoom);
-  }, [currentRoom]);
-
-  const onOpenModal = () => {
-    setIsModalOpen(true);
-    setIsMenuOpen(false);
-  };
-
-  const onCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const onOpenMenu = () => {
-    setIsMenuOpen(true);
-  };
-
-  const onCloseMenu = () => {
-    setIsMenuOpen(false);
-  };
-
-  const onLeaveRoom = () => {
-    setIsMenuOpen(false);
-    leaveRoom(currentRoom);
-    setIsJoinRoom(false);
-  };
+  // }, [messages, talker]);
 
   const onSend = (event) => {
     event.preventDefault();
     const message = event.target[0].value;
-    sendMessage(message);
+    sendDirectMessage(username, talker, message);
   };
-
-  // const onJoinRoom = () => {
-  //   joinRoom(username, currentRoom);
-  //   setIsJoinRoom(true);
-  // };
 
   const ChatPage = () => {
     return (
       <ContentContainer>
         <NameWrapper>
-          <RoomTitle>{currentRoom}</RoomTitle>
-          <Modal
-            open={isModalOpen}
-            onClose={onCloseModal}
-            aria-labelledby="modal-title"
-            aria-describedby="modal-desc"
-          >
-            <ModalContainer>
-              <ModalTitleContainer id="modal-title">
-                <ModalTitle>Users List</ModalTitle>
-                <Button
-                  onClick={onCloseModal}
-                  sx={{ backgroundColor: theme.color.white, margin: "10px" }}
-                >
-                  Close
-                </Button>
-              </ModalTitleContainer>
-              <UsersListContainer id="modal-desc">
-                {usersList.map((user) => (
-                  <p>{user.username}</p>
-                ))}
-              </UsersListContainer>
-            </ModalContainer>
-          </Modal>
-          <IconButton onClick={onOpenMenu}>
-            <MoreVert />
-          </IconButton>
-          <Menu
-            open={isMenuOpen}
-            onClose={onCloseMenu}
-            anchorOrigin={{ horizontal: "right", vertical: "top" }}
-          >
-            <MenuItem onClick={onLeaveRoom}>Leave Room</MenuItem>
-            <MenuItem onClick={onOpenModal}>Users List</MenuItem>
-          </Menu>
+          <RoomTitle>{talker}</RoomTitle>
         </NameWrapper>
-        {pinnedMessage !== null && (
-          <PinnedMessageContainer>
-            <PushPin sx={{ transform: "rotate(45deg)" }} />
-            <PinnedMessageWrapper>
-              {pinnedMessage.username} : {pinnedMessage.time} {" >> "}
-              {pinnedMessage.text}
-            </PinnedMessageWrapper>
-          </PinnedMessageContainer>
-        )}
-
         <ChatContent>
           {messages.map((msg) =>
-            msg.room === currentRoom ? (
+            msg.room === talker ? (
               msg.username === undefined ? (
                 <JoiningMessage message={msg.text} />
               ) : msg.username === username ? (
                 <MessageBubbleRight
                   message={msg.text}
                   time={msg.time}
-                  room={currentRoom}
+                  room={talker}
                 />
               ) : (
                 <MessageBubbleLeft
@@ -192,6 +61,17 @@ const ChatRoom = ({ username, currentRoom, messages, setMessages }) => {
                   time={msg.time}
                 />
               )
+            ) : null
+          )}
+          {messages.map((msg) =>
+            msg.sender === username && msg.receiver === talker ? (
+              <MessageBubbleRight message={msg.text} time={msg.time} />
+            ) : msg.sender === talker && msg.receiver === username ? (
+              <MessageBubbleLeft
+                name={msg.sender}
+                message={msg.text}
+                time={msg.time}
+              />
             ) : null
           )}
         </ChatContent>
@@ -234,10 +114,10 @@ const ChatRoom = ({ username, currentRoom, messages, setMessages }) => {
     );
   };
 
-  return <>{isJoinRoom ? <ChatPage /> : <NotChatPage />}</>;
+  return <ChatPage />;
 };
 
-export default ChatRoom;
+export default DirectMessageRoom;
 
 const ContentContainer = styled.div`
   width: 100%;
