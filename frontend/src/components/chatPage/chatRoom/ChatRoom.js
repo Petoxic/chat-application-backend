@@ -31,8 +31,8 @@ import {
 
 const socket = getSocket();
 
-const ChatRoom = ({ username, currentRoom }) => {
-  const [messages, setMessages] = useState([]);
+const ChatRoom = ({ username, currentRoom, messages, setMessages }) => {
+  // const [messages, setMessages] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isJoinRoom, setIsJoinRoom] = useState(false);
   const [usersList, setUsersList] = useState([]);

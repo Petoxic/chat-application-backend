@@ -30,6 +30,7 @@ const MessageBubbleRight = ({ message, time, room }) => {
       <TextContainer>
         {room === undefined ? (
           <MessageContainer>
+            <TimeStamp>{time}</TimeStamp>
             <MessageBubble>
               <Message>{message}</Message>
             </MessageBubble>

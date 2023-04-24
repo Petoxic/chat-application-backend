@@ -1,18 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import {
-  Input,
-  Button,
-  Modal,
-  IconButton,
-  Menu,
-  MenuItem,
-  FormControl,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
+import { Input, Button, FormControl, Typography } from "@mui/material";
 import { Chat, ChatOutlined, MoreVert, PushPin } from "@mui/icons-material";
 
 import theme from "../../../utils/theme";
@@ -21,44 +9,27 @@ import MessageBubbleRight from "./MessageBubbleRight";
 import JoiningMessage from "./JoiningMessage";
 import {
   getSocket,
-  sendMessage,
-  isInRoom,
-  joinRoom,
-  leaveRoom,
-  getUsersInRoom,
   getPinnedMessage,
   sendDirectMessage,
 } from "../../../utils/socket";
 
 const socket = getSocket();
 
-const DirectMessageRoom = ({ username, talker }) => {
-  const [messages, setMessages] = useState([]);
-  const [isJoinRoom, setIsJoinRoom] = useState(false);
-  const [pinnedMessage, setPinnedMessage] = useState(null);
+const DirectMessageRoom = ({ username, talker, messages, setMessages }) => {
+  // const [messages, setMessages] = useState([]);
 
-  useEffect(() => {
-    socket.on("sendDirectMessage", (message) => {
-      const sender = message.sender;
-      const receiver = message.receiver;
-      if (
-        (sender === username || sender === talker) &&
-        (receiver === username || receiver === talker)
-      ) {
-        setMessages([...messages, message]);
-      }
-    });
-  }, [messages, talker]);
-
-  useEffect(() => {
-    socket.on("sendPinnedMessage", (message) => {
-      setPinnedMessage(message);
-    });
-  }, [pinnedMessage]);
-
-  useEffect(() => {
-    getPinnedMessage(talker);
-  }, [talker]);
+  // useEffect(() => {
+  //   socket.on("sendDirectMessage", (message) => {
+  //     const sender = message.sender;
+  //     const receiver = message.receiver;
+  //     if (
+  //       (sender === username || sender === talker) &&
+  //       (receiver === username || receiver === talker)
+  //     ) {
+  //       setMessages([...messages, message]);
+  //     }
+  //   });
+  // }, [messages, talker]);
 
   const onSend = (event) => {
     event.preventDefault();
@@ -66,27 +37,12 @@ const DirectMessageRoom = ({ username, talker }) => {
     sendDirectMessage(username, talker, message);
   };
 
-  // const onJoinRoom = () => {
-  //   joinRoom(username, talker);
-  //   setIsJoinRoom(true);
-  // };
-
   const ChatPage = () => {
     return (
       <ContentContainer>
         <NameWrapper>
           <RoomTitle>{talker}</RoomTitle>
         </NameWrapper>
-        {pinnedMessage !== null && (
-          <PinnedMessageContainer>
-            <PushPin sx={{ transform: "rotate(45deg)" }} />
-            <PinnedMessageWrapper>
-              {pinnedMessage.username} : {pinnedMessage.time} {" >> "}
-              {pinnedMessage.text}
-            </PinnedMessageWrapper>
-          </PinnedMessageContainer>
-        )}
-
         <ChatContent>
           {messages.map((msg) =>
             msg.room === talker ? (
@@ -107,7 +63,7 @@ const DirectMessageRoom = ({ username, talker }) => {
               )
             ) : null
           )}
-          {messages.map((msg) => {
+          {messages.map((msg) =>
             msg.sender === username && msg.receiver === talker ? (
               <MessageBubbleRight message={msg.text} time={msg.time} />
             ) : msg.sender === talker && msg.receiver === username ? (
@@ -116,8 +72,8 @@ const DirectMessageRoom = ({ username, talker }) => {
                 message={msg.text}
                 time={msg.time}
               />
-            ) : null;
-          })}
+            ) : null
+          )}
         </ChatContent>
         <MessageContainer>
           <FormContainer onSubmit={onSend}>
