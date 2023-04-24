@@ -25,6 +25,8 @@ import {
   isInRoom,
   joinRoom,
   leaveRoom,
+  getUsersInRoom,
+  getPinnedMessage,
 } from "../../../utils/socket";
 
 const socket = getSocket();
@@ -37,14 +39,12 @@ const ChatRoom = ({ username, currentRoom }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [pinnedMessage, setPinnedMessage] = useState(null);
 
-  console.log("currentRoom", currentRoom);
+  console.log("currentRoom now", currentRoom);
 
   useEffect(() => {
     socket.on("message", (message) => {
-      console.log("currentRoom", currentRoom);
       // if(message.room === currentRoom) {
       setMessages([...messages, message]);
-      console.log("all Messages", messages);
       // }
     });
   }, [messages, currentRoom]);
@@ -69,16 +69,26 @@ const ChatRoom = ({ username, currentRoom }) => {
   }, [currentRoom]);
 
   useEffect(() => {
-    socket.on("roomUsers", ({ users }) => {
-      setUsersList(users);
+    socket.on("roomUsers", ({ room, users }) => {
+      if (room === currentRoom) {
+        setUsersList(users);
+      }
     });
-  }, []);
+  }, [currentRoom]);
+
+  useEffect(() => {
+    getUsersInRoom(currentRoom);
+  }, [currentRoom]);
 
   useEffect(() => {
     socket.on("sendPinnedMessage", (message) => {
       setPinnedMessage(message);
     });
   }, [pinnedMessage]);
+
+  useEffect(() => {
+    getPinnedMessage(currentRoom);
+  }, [currentRoom]);
 
   const onOpenModal = () => {
     setIsModalOpen(true);
@@ -109,10 +119,10 @@ const ChatRoom = ({ username, currentRoom }) => {
     sendMessage(message);
   };
 
-  const onJoinRoom = () => {
-    joinRoom(username, currentRoom);
-    setIsJoinRoom(true);
-  };
+  // const onJoinRoom = () => {
+  //   joinRoom(username, currentRoom);
+  //   setIsJoinRoom(true);
+  // };
 
   const ChatPage = () => {
     return (

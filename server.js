@@ -69,10 +69,15 @@ io.on("connection", (socket) => {
       );
 
       // send message to everyone in room
-      io.to(user.currentRoom).emit("message", message);
+      // io.to(user.currentRoom).emit("message", message);
+      io.emit("message", message);
 
       // resend list of users in room
-      io.to(user.currentRoom).emit("roomUsers", {
+      // io.to(user.currentRoom).emit("roomUsers", {
+      //   room: user.currentRoom,
+      //   users: getRoomUsers(user.currentRoom),
+      // });
+      io.emit("roomUsers", {
         room: user.currentRoom,
         users: getRoomUsers(user.currentRoom),
       });
@@ -133,6 +138,11 @@ io.on("connection", (socket) => {
     io.to(room).emit("sendPinnedMessage", msg);
   });
 
+  socket.on("getPinnedMessage", (room) => {
+    const msg = getPinnedMessage(room);
+    io.to(room).emit("sendPinnedMessage", msg);
+  });
+
   // create room
   socket.on("createRoom", ({ username, room }) => {
     const { user, isFirstTime } = userJoinRoom(socket.id, username, room);
@@ -152,6 +162,14 @@ io.on("connection", (socket) => {
   // get join room list
   socket.on("getJoinRooms", (username) => {
     io.emit("joinRoomList", { name: username, rooms: getJoinRooms(username) });
+  });
+
+  // get users list in room
+  socket.on("getUsersInRoom", (room) => {
+    io.to(room).emit("roomUsers", {
+      room: room,
+      users: getRoomUsers(room),
+    });
   });
 });
 

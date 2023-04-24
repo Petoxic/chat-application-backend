@@ -12,7 +12,7 @@ export const joinRoom = (username, room) => {
 
 export const createRoom = (username, room) => {
   socket.emit("createRoom", { username, room });
-}
+};
 
 export const sendMessage = (message) => {
   socket.emit("chatMessage", message);
@@ -32,4 +32,12 @@ export const leaveRoom = (room) => {
 
 export const pinMessage = (room, message) => {
   socket.emit("pinMessage", { room, message });
+};
+
+export const getPinnedMessage = (room) => {
+  socket.emit("getPinnedMessage", room);
+};
+
+export const getUsersInRoom = (room) => {
+  socket.emit("getUsersInRoom", room);
 };

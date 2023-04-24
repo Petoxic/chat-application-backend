@@ -52,4 +52,9 @@ function getPinnedMessage(room) {
   return pinnedMessages.find((msg) => msg.room === room);
 }
 
-module.exports = { pushAnnouncement, pushMessage, pushPinnedMessage, getPinnedMessage };
+module.exports = {
+  pushAnnouncement,
+  pushMessage,
+  pushPinnedMessage,
+  getPinnedMessage,
+};

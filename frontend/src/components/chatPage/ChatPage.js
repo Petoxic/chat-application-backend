@@ -11,19 +11,22 @@ const ChatPage = () => {
   const location = useLocation();
 
   const changeRoom = (room) => {
-    console.log('room', room, currentRoom);
+    console.log("room", room, currentRoom);
     // if(currentRoom) {
     //   leaveRoom(location.state.username, currentRoom);
     // }
-    joinRoom(location.state.username, room);
     setCurrentRoom(room);
+    joinRoom(location.state.username, room);
   };
-
-  console.log('currentRoom', currentRoom);
 
   return (
     <ContentContainer>
-      <NavBar username={location.state.username} currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} changeRoom={changeRoom}/>
+      <NavBar
+        username={location.state.username}
+        currentRoom={currentRoom}
+        setCurrentRoom={setCurrentRoom}
+        changeRoom={changeRoom}
+      />
       <ChatRoom username={location.state.username} currentRoom={currentRoom} />
     </ContentContainer>
   );

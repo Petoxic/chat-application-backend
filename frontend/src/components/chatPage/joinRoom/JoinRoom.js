@@ -34,6 +34,7 @@ const JoinRoom = (props) => {
 
   const onJoinRoom = (room) => {
     joinRoom(username, room);
+    socket.emit("getUnjoinRooms", username);
   };
 
   const onCreateRoom = () => {
