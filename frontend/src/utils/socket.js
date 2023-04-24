@@ -18,6 +18,10 @@ export const sendMessage = (message) => {
   socket.emit("chatMessage", message);
 };
 
+export const sendDirectMessage = (username, talker, message) => {
+  socket.emit("chatDirectMessage", { username, talker, message });
+};
+
 export const getSocket = () => {
   return socket;
 };

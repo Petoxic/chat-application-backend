@@ -1,33 +1,41 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import ChatRoom from "./chatRoom/ChatRoom";
+import DirectMessageRoom from "./chatRoom/DirectMessageRoom";
 import { useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
 import NavBar from "../navBar/NavBar";
 import { joinRoom, leaveRoom } from "../../utils/socket";
 
 const ChatPage = () => {
-  const [currentRoom, setCurrentRoom] = useState();
+  const [currentTarget, setCurrentTarget] = useState(null);
+  const [isDirectMessage, setIsDirectMessage] = useState(false);
   const location = useLocation();
 
-  const changeRoom = (room) => {
-    console.log("room", room, currentRoom);
-    // if(currentRoom) {
-    //   leaveRoom(location.state.username, currentRoom);
-    // }
-    setCurrentRoom(room);
-    joinRoom(location.state.username, room);
+  const changeRoom = (target, isDirect) => {
+    if (isDirect) {
+      setIsDirectMessage(true);
+    } else {
+      setIsDirectMessage(false);
+      joinRoom(location.state.username, target);
+    }
+    setCurrentTarget(target);
   };
 
   return (
     <ContentContainer>
-      <NavBar
-        username={location.state.username}
-        currentRoom={currentRoom}
-        setCurrentRoom={setCurrentRoom}
-        changeRoom={changeRoom}
-      />
-      <ChatRoom username={location.state.username} currentRoom={currentRoom} />
+      <NavBar username={location.state.username} changeRoom={changeRoom} />
+      {isDirectMessage ? (
+        <DirectMessageRoom
+          username={location.state.username}
+          talker={currentTarget}
+        />
+      ) : (
+        <ChatRoom
+          username={location.state.username}
+          currentRoom={currentTarget}
+        />
+      )}
     </ContentContainer>
   );
 };

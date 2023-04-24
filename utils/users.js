@@ -83,6 +83,13 @@ function getAllUsers() {
   return users;
 }
 
+function userGoDirectMessage(id) {
+  const user = users.find((u) => u.id === id);
+  if (user !== undefined) {
+    user.currentRoom = "";
+  }
+}
+
 module.exports = {
   getCurrentUser,
   userLeaveRoom,
@@ -91,4 +98,5 @@ module.exports = {
   userJoinRoom,
   getAllUsers,
   userLeaveChat,
+  userGoDirectMessage,
 };

@@ -39,7 +39,11 @@ const MainTab = (props) => {
   });
 
   const onJoinRoom = (room) => {
-    changeRoom(room);
+    changeRoom(room, false);
+  };
+
+  const onJoinDirectMessage = (talker) => {
+    changeRoom(talker, true);
   };
 
   const renderProfile = () => (
@@ -60,11 +64,17 @@ const MainTab = (props) => {
         >
           <Typography>Users</Typography>
         </StyledAccordionSummary>
-        {users.map((user, idx) => (
-          <StyledAccordionDetails key={idx}>
-            <Typography>{user.username}</Typography>
-          </StyledAccordionDetails>
-        ))}
+        {users.map((user, idx) =>
+          user.username !== username ? (
+            <StyledAccordionDetails key={idx}>
+              <Typography>{user.username}</Typography>
+              <Chat
+                sx={{ color: `${theme.color.gray2}` }}
+                onClick={() => onJoinDirectMessage(user.username)}
+              />
+            </StyledAccordionDetails>
+          ) : null
+        )}
       </StyledAccordion>
       <StyledAccordion>
         <StyledAccordionSummary

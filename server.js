@@ -28,6 +28,7 @@ const {
 } = require("./utils/rooms");
 const { clientJoin, getClients } = require("./utils/clients");
 const { create } = require("domain");
+const { pushDirectMessage } = require("./utils/directMessage");
 
 const app = express();
 const server = http.createServer(app);
@@ -72,14 +73,8 @@ io.on("connection", (socket) => {
       );
 
       // send message to everyone in room
-      // io.to(user.currentRoom).emit("message", message);
       io.emit("message", message);
 
-      // resend list of users in room
-      // io.to(user.currentRoom).emit("roomUsers", {
-      //   room: user.currentRoom,
-      //   users: getRoomUsers(user.currentRoom),
-      // });
       io.emit("roomUsers", {
         room: user.currentRoom,
         users: getRoomUsers(user.currentRoom),
@@ -97,6 +92,11 @@ io.on("connection", (socket) => {
     const user = getCurrentUser(socket.id);
     const message = pushMessage(user.username, msg, user.currentRoom);
     io.to(user.currentRoom).emit("message", message);
+  });
+
+  socket.on("chatDirectMessage", ({ username, talker, message }) => {
+    const msg = pushDirectMessage(username, talker, message);
+    io.emit("sendDirectMessage", msg);
   });
 
   // leave room
