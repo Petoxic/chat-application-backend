@@ -180,6 +180,10 @@ io.on("connection", (socket) => {
     io.emit("sendAllUsers", getAllUsers());
   });
 
+  socket.on("getAllUsers", () => {
+    io.emit("sendAllUsers", getAllUsers());
+  });
+
   // users disconnect from website
   socket.on("disconnect", () => {
     const u = userLeaveChat(socket.id);
