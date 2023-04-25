@@ -8,7 +8,7 @@ import {
   InputBase,
   Input,
 } from "@mui/material";
-import { getSocket, joinRoom, createRoom } from "../../../utils/socket";
+import { getSocket, joinRoom, createRoom, searchRoom } from "../../../utils/socket";
 
 const socket = getSocket();
 
@@ -17,16 +17,18 @@ const JoinRoom = (props) => {
   const [roomList, setRoomList] = useState([]);
   const [isCreatingRoom, setCreatingRoom] = useState(false);
   const [roomName, setRoomName] = useState("");
+  const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
     socket.emit("getUnjoinRooms", username);
+    socket.emit("searchRooms", {searchInput, username});
   }, [username]);
 
   socket.on("roomCreated", () => {
     socket.emit("getUnjoinRooms", username);
   });
 
-  socket.on("unjoinRoomList", ({ name, rooms }) => {
+  socket.on("searchResult", ({name, rooms}) => {
     if (name === username) {
       setRoomList(rooms);
     }
@@ -49,11 +51,26 @@ const JoinRoom = (props) => {
     setRoomName("");
   };
 
+  const handleSearch = () => {
+    console.log('searchInput', searchInput);
+    searchRoom(searchInput, username);
+  };
+
   const renderSearch = () => (
     <InputWrapper>
-      <InputBase sx={{ ml: 1, flex: 1 }} placeholder="Search group name" />
-      <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-        <Search />
+      <InputBase 
+        sx={{ ml: 1, flex: 1 }} 
+        placeholder="Search group name" 
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+      />
+      <IconButton 
+        type="button" 
+        sx={{ p: "10px" }} 
+        aria-label="search"
+        onClick={() => handleSearch()}
+      >
+        <Search/>
       </IconButton>
     </InputWrapper>
   );
