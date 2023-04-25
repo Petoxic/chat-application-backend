@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import theme from "../../../utils/theme";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { pinMessage } from "../../../utils/socket";
+import { pinDirectMessage, pinMessage } from "../../../utils/socket";
 
 const MessageBubbleRight = ({ message, time, room }) => {
   const [isFocus, setIsFocus] = useState(false);
@@ -22,31 +22,39 @@ const MessageBubbleRight = ({ message, time, room }) => {
   };
 
   const onPinMessage = () => {
-    console.log("pinning message");
     pinMessage(room, message);
   };
 
   return (
     <ChatMessageContainer>
       <TextContainer>
-        <MessageContainer
-          onMouseEnter={() => setIsFocus(true)}
-          onMouseLeave={() => setIsFocus(false)}
-        >
-          {isFocus ? (
-            <IconButton onClick={onOpenOption}>
-              <MoreVertIcon />
-            </IconButton>
-          ) : (
+        {room === undefined ? (
+          <MessageContainer>
             <TimeStamp>{time}</TimeStamp>
-          )}
-          <Menu open={isOptionOpen} onClose={onCloseOption} anchorEl={anchor}>
-            <MenuItem onClick={onPinMessage}>Pin Message</MenuItem>
-          </Menu>
-          <MessageBubble>
-            <Message>{message}</Message>
-          </MessageBubble>
-        </MessageContainer>
+            <MessageBubble>
+              <Message>{message}</Message>
+            </MessageBubble>
+          </MessageContainer>
+        ) : (
+          <MessageContainer
+            onMouseEnter={() => setIsFocus(true)}
+            onMouseLeave={() => setIsFocus(false)}
+          >
+            {isFocus ? (
+              <IconButton onClick={onOpenOption}>
+                <MoreVertIcon />
+              </IconButton>
+            ) : (
+              <TimeStamp>{time}</TimeStamp>
+            )}
+            <Menu open={isOptionOpen} onClose={onCloseOption} anchorEl={anchor}>
+              <MenuItem onClick={onPinMessage}>Pin Message</MenuItem>
+            </Menu>
+            <MessageBubble>
+              <Message>{message}</Message>
+            </MessageBubble>
+          </MessageContainer>
+        )}
       </TextContainer>
     </ChatMessageContainer>
   );

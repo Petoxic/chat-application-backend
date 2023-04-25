@@ -1,3 +1,4 @@
+// rooms = [ { roomName, users }, ... ]
 const rooms = [];
 
 function createRoom(username, roomName) {
@@ -8,7 +9,10 @@ function createRoom(username, roomName) {
 function joinRoom(username, roomName) {
   const room = rooms.find((room) => room.roomName === roomName);
   if (room !== undefined) {
-    room.users.push(username);
+    const user = room.users.find((u) => u === username);
+    if (user === undefined) {
+      room.users.push(username);
+    }
   }
 }
 
@@ -29,10 +33,25 @@ function getJoinRooms(username) {
   });
   return joinRooms;
 }
+
+function leaveRoom(username, room) {
+  const leavingRoom = rooms.find((r) => r.roomName === room);
+  console.log(leavingRoom);
+  if (leavingRoom !== undefined) {
+    const userIdx = leavingRoom.users.findIndex((u) => u === username);
+    if (userIdx !== -1) {
+      leavingRoom.users.splice(userIdx, 1);
+    }
+  }
+  console.log("result", leavingRoom);
+  return leavingRoom;
+}
+
 module.exports = {
   createRoom,
   joinRoom,
   getRooms,
   getUnjoinRooms,
   getJoinRooms,
+  leaveRoom,
 };

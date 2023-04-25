@@ -6,23 +6,17 @@ import {
   IconButton,
   Paper,
   InputBase,
-  Modal,
   Input,
 } from "@mui/material";
 import { getSocket, joinRoom, createRoom } from "../../../utils/socket";
 
 const socket = getSocket();
 
-const mockRoomList = [
-  { name: "redroom", id: "1234" },
-  { name: "eren", id: "5678" },
-];
-
 const JoinRoom = (props) => {
   const { username } = props;
   const [roomList, setRoomList] = useState([]);
   const [isCreatingRoom, setCreatingRoom] = useState(false);
-  const [roomName, setRoomName] = useState("...");
+  const [roomName, setRoomName] = useState("");
 
   useEffect(() => {
     socket.emit("getUnjoinRooms", username);
@@ -40,16 +34,18 @@ const JoinRoom = (props) => {
 
   const onJoinRoom = (room) => {
     joinRoom(username, room);
+    socket.emit("getUnjoinRooms", username);
   };
 
   const onCreateRoom = () => {
     console.log("onCreateRoom", username, roomName);
     createRoom(username, roomName);
     socket.emit("getJoinRooms", username);
+    toggleCreateRoom()
   };
 
-  const handleClose = () => {
-    setCreatingRoom(false);
+  const toggleCreateRoom = () => {
+    setCreatingRoom(!isCreatingRoom);
     setRoomName("");
   };
 
@@ -62,25 +58,22 @@ const JoinRoom = (props) => {
     </InputWrapper>
   );
 
-  // const renderModal = () => (
-  //   // <Modal
-  //   //   open={isCreatingRoom}
-  //   //   onClose={() => handleClose()}
-  //   //   style={{width: 100, height: 100}}
-  //   // >
-  //   //   {/* <Input
-  //   //     value={roomName}
-  //   //     onChange={(e) => setRoomName(e.target.value)}
-  //   //     placeholder="room name"
-  //   //   />
-  //   //   <Button onClick={() => onCreateRoom()}/> */}
-  //   // </Modal>
-  // )
+  const renderCreatRoom = () => (
+    <CreateRoomContainer>
+      <Input 
+        value={roomName}
+        sx={{width:'70%'}}
+        onChange={(e) => setRoomName(e.target.value)}
+        placeholder="group name"
+      />
+      <Button onClick={() => onCreateRoom()}>Create</Button>
+    </CreateRoomContainer>
+  );
 
   return (
     <ContentContainer>
-      <Button onClick={() => onCreateRoom()}>Create Chat Group</Button>
-      {/* {renderModal()} */}
+      <Button onClick={() => toggleCreateRoom()}>Create Chat Group</Button>
+      {isCreatingRoom && renderCreatRoom()}
       {renderSearch()}
       {roomList.map((room) => (
         <JoinRoomWrapper>
@@ -88,7 +81,7 @@ const JoinRoom = (props) => {
           <GroupAdd
             color="disabled"
             fontSize="small"
-            onClick={() => onJoinRoom(room.id)}
+            onClick={() => onJoinRoom(room.roomName)}
           />
         </JoinRoomWrapper>
       ))}
@@ -101,6 +94,13 @@ const ContentContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+`;
+
+const CreateRoomContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
 `;
 
 const JoinRoomWrapper = styled.div`
