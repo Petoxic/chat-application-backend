@@ -1,6 +1,6 @@
 const color = {
   // primary: "#38BDF8",
-  primary: "#62CDFF",
+  primary: "#2196f3",
   // secondary: "#A5F3FC",
   secondary: "#97DEFF",
   ternary: "#C9EEFF",

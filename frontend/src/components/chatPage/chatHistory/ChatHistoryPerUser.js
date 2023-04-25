@@ -3,9 +3,9 @@ import React from "react";
 import styled from "@emotion/styled";
 import theme from "../../../utils/theme";
 
-const ChatHistoryPerUser = ({ name, message, timestamp }) => {
+const ChatHistoryPerUser = ({ name, message, timestamp, onClick }) => {
   return (
-    <ContentContainer>
+    <ContentContainer onClick={onClick}>
       <InformationContainer>
         <Avatar/>
         <TextContainer>
@@ -13,7 +13,7 @@ const ChatHistoryPerUser = ({ name, message, timestamp }) => {
           <Message>{message}</Message>
         </TextContainer>
       </InformationContainer>
-      <Message>{timestamp}</Message>
+      <Time>{timestamp}</Time>
     </ContentContainer>
   );
 };
@@ -26,6 +26,7 @@ const ContentContainer = styled.div`
   ${'' /* background-color: ${theme.color.gray0}; */}
   padding: 10px;
   height: 60px;
+  border-bottom: 2px solid ${theme.color.gray0};
 `;
 
 const InformationContainer = styled.div`
@@ -36,6 +37,7 @@ const InformationContainer = styled.div`
 const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 180px;
 `;
 
 const Name = styled(Typography)`
@@ -44,7 +46,16 @@ const Name = styled(Typography)`
 
 const Message = styled(Typography)`
   font-size: 14px;
-  color: ${theme.color.gray2}
+  color: ${theme.color.gray2};
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+`;
+
+const Time = styled(Typography)`
+  font-size: 14px;
+  color: ${theme.color.gray2};
 `;
 
 export default ChatHistoryPerUser;

@@ -1,34 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import ChatHistoryPerUser from "./ChatHistoryPerUser";
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
-import { Tab, Tabs} from "@mui/material";
+import { Box, Tab, Tabs } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import { Paper } from "@mui/material";
-import { getSocket } from "../../../utils/socket";
-import { useLocation } from "react-router-dom";
-
-const socket = getSocket();
 
 const ChatHistory = (props) => {
-  const {groupMessage, directMessage} = props;
-
-  const [groupMessageHistories, setGroupMessageHistories] = useState([]);
-  const [chatRoom, setChatRoom] = useState([]);
-  const [value, setValue] = useState(0);
-
-  const location = useLocation();
+  const {groupMessage, directMessage, changeRoom} = props;
+  const [tabValue, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    event.preventDefault();
+    if (newValue >= 0 && newValue <= 1) {
+      setValue(newValue);
+    }
   };
 
-  useEffect(() => {
-    setGroupMessageHistories(groupMessage);
-  }, [groupMessage]);
-
-  function TabPanel(props) {
+  const TabPanel = (props) => {
     const { children, value, index, ...other } = props;
   
     return (
@@ -40,11 +30,11 @@ const ChatHistory = (props) => {
         style={{width: '100%'}}
         {...other}
       >
-        {value === index && (
-          <>
+        {value === index && 
+          <Box>
             {children}
-          </>
-        )}
+          </Box>
+        }
       </div>
     );
   }
@@ -55,13 +45,6 @@ const ChatHistory = (props) => {
       'aria-controls': `simple-tabpanel-${index}`,
     };
   }
-
-  useEffect(() => {
-    socket.on("roomUsers", ({ room, users }) => {
-      console.log(" ",room);
-      setChatRoom(room);
-    });
-  }, []);
 
   const renderSearch = () => (
     <InputWrapper>
@@ -75,6 +58,14 @@ const ChatHistory = (props) => {
     </InputWrapper>
   )
 
+  const handleChangeRoom = (event, title, isPrivate) => {
+    event.preventDefault();
+    changeRoom(title, isPrivate);
+    if(!isPrivate) {
+      handleChange(event, 1);
+    }
+  };
+
   const renderDirectMessageHistory = () => (
     directMessage.map((message, index) => (
       <ChatHistoryPerUser
@@ -82,6 +73,7 @@ const ChatHistory = (props) => {
         name={message.title}
         message={message.text}
         timestamp={message.time}
+        onClick={(e) => handleChangeRoom(e, message.sender, true)}
       />
     ))
   );
@@ -93,21 +85,22 @@ const ChatHistory = (props) => {
         key={index}
         message={message.text}
         timestamp={message.time}
+        onClick={(e) => handleChangeRoom(e, message.room, false)}
       />
     ))
   );
 
   return (
     <ContentContainer>
-      <StyledTabs value={value} onChange={handleChange}>
-        <Tab label="users"  {...a11yProps(0)}></Tab>
-        <Tab label="groups"  {...a11yProps(1)}></Tab>
+      <StyledTabs value={tabValue} onChange={handleChange}>
+        <Tab label="users"  {...a11yProps(0)}/>
+        <Tab label="groups"  {...a11yProps(1)}/>
       </StyledTabs>
-      <TabPanel value={value} index={0}>
+      <TabPanel value={tabValue} index={0}>
         {renderSearch()}
         {directMessage && renderDirectMessageHistory()}
       </TabPanel>
-      <TabPanel value={value} index={1}>
+      <TabPanel value={tabValue} index={1}>
         {renderSearch()}
         {groupMessage && renderGroupMessageHistory()}
       </TabPanel>

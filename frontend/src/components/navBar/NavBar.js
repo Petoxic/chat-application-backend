@@ -18,7 +18,7 @@ const NavBar = (props) => {
   const { username, changeRoom, directMessage, groupMessage } = props;
   const [value, setValue] = useState(0);
 
-  function TabPanel(props) {
+  const TabPanel = React.memo((props) => {
     const { children, value, index, ...other } = props;
 
     return (
@@ -32,7 +32,7 @@ const NavBar = (props) => {
         {value === index && <Box style={{ width: "25vw" }}>{children}</Box>}
       </div>
     );
-  }
+  })
 
   const handleChange = (event, newValue) => {
     // Check if the newValue is within the range of available tab indexes
@@ -68,7 +68,8 @@ const NavBar = (props) => {
       <TabPanel value={value} index={1}>
         <ChatHistory 
           directMessage={directMessage}
-          groupMessage= {groupMessage}
+          groupMessage={groupMessage}
+          changeRoom={changeRoom}
         />
       </TabPanel>
       <TabPanel value={value} index={2}>

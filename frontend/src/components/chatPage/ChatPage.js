@@ -47,15 +47,15 @@ const ChatPage = () => {
         console.log(message);
         if(newMessageHistory.title === message.title) {
           setDirectMessageHistories([
-            ...directMessageHistories.slice(0, index),
             newMessageHistory,
+            ...directMessageHistories.slice(0, index),
             ...directMessageHistories.slice(index+1),
           ]);
           existed = true;
         }
       });
       if(!existed) {
-        setDirectMessageHistories([...directMessageHistories, newMessageHistory]);
+        setDirectMessageHistories([newMessageHistory, ...directMessageHistories]);
       }
     } else {
       setDirectMessageHistories([newMessageHistory]);
@@ -69,15 +69,15 @@ const ChatPage = () => {
       groupMessageHistories.forEach((message, index) => {
         if(lastGroupMessage.room === message.room) {
           setGroupMessageHistories([
-            ...groupMessageHistories.slice(0, index),
             lastGroupMessage,
+            ...groupMessageHistories.slice(0, index),
             ...groupMessageHistories.slice(index+1),
           ]);
           existed = true;
         }
       });
       if(!existed) {
-        setGroupMessageHistories([...groupMessageHistories, lastGroupMessage]);
+        setGroupMessageHistories([lastGroupMessage, ...groupMessageHistories]);
       } 
     } else {
       setGroupMessageHistories([lastGroupMessage]);
