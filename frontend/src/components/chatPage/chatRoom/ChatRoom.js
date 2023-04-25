@@ -8,12 +8,9 @@ import {
   Menu,
   MenuItem,
   FormControl,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Typography,
 } from "@mui/material";
-import { Chat, ChatOutlined, MoreVert, PushPin } from "@mui/icons-material";
+import { ChatOutlined, MoreVert, PushPin } from "@mui/icons-material";
 
 import theme from "../../../utils/theme";
 import MessageBubbleLeft from "./MessageBubbleLeft";
@@ -22,8 +19,6 @@ import JoiningMessage from "./JoiningMessage";
 import {
   getSocket,
   sendMessage,
-  isInRoom,
-  joinRoom,
   leaveRoom,
   getUsersInRoom,
   getPinnedMessage,
@@ -31,7 +26,7 @@ import {
 
 const socket = getSocket();
 
-const ChatRoom = ({ username, currentRoom, messages, setMessages }) => {
+const ChatRoom = ({ username, currentRoom, messages, setMessages, setLastMessage }) => {
   // const [messages, setMessages] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isJoinRoom, setIsJoinRoom] = useState(false);
@@ -45,9 +40,10 @@ const ChatRoom = ({ username, currentRoom, messages, setMessages }) => {
     socket.on("message", (message) => {
       // if(message.room === currentRoom) {
       setMessages([...messages, message]);
+      setLastMessage(message);
       // }
     });
-  }, [messages, currentRoom]);
+  }, [messages, currentRoom, setMessages]);
 
   // useEffect(() => {
   //   isInRoom(currentRoom);

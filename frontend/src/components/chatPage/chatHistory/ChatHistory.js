@@ -7,17 +7,26 @@ import { Tab, Tabs} from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import { Paper } from "@mui/material";
 import { getSocket } from "../../../utils/socket";
+import { useLocation } from "react-router-dom";
 
 const socket = getSocket();
 
-const ChatHistory = () => {
-  const [messageHistories, setMessageHistories] = useState([]);
+const ChatHistory = (props) => {
+  const {groupMessage, directMessage} = props;
+
+  const [groupMessageHistories, setGroupMessageHistories] = useState([]);
   const [chatRoom, setChatRoom] = useState([]);
   const [value, setValue] = useState(0);
+
+  const location = useLocation();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  useEffect(() => {
+    setGroupMessageHistories(groupMessage);
+  }, [groupMessage]);
 
   function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -46,13 +55,6 @@ const ChatHistory = () => {
       'aria-controls': `simple-tabpanel-${index}`,
     };
   }
-  
-
-  useEffect(() => {
-    socket.on("message", (message) => {
-      setMessageHistories([message]);
-    });
-  }, []);
 
   useEffect(() => {
     socket.on("roomUsers", ({ room, users }) => {
@@ -73,6 +75,28 @@ const ChatHistory = () => {
     </InputWrapper>
   )
 
+  const renderDirectMessageHistory = () => (
+    directMessage.map((message, index) => (
+      <ChatHistoryPerUser
+        key={index}
+        name={message.title}
+        message={message.text}
+        timestamp={message.time}
+      />
+    ))
+  );
+
+  const renderGroupMessageHistory = () => (
+    groupMessage.map((message, index) => (
+      <ChatHistoryPerUser 
+        name={message.room} 
+        key={index}
+        message={message.text}
+        timestamp={message.time}
+      />
+    ))
+  );
+
   return (
     <ContentContainer>
       <StyledTabs value={value} onChange={handleChange}>
@@ -81,18 +105,11 @@ const ChatHistory = () => {
       </StyledTabs>
       <TabPanel value={value} index={0}>
         {renderSearch()}
-        users
+        {directMessage && renderDirectMessageHistory()}
       </TabPanel>
       <TabPanel value={value} index={1}>
         {renderSearch()}
-        group
-        {messageHistories.map((message) => (
-          <ChatHistoryPerUser 
-            name={chatRoom} 
-            message={message.text}
-            timestamp={message.time}
-          />
-        ))}
+        {groupMessage && renderGroupMessageHistory()}
       </TabPanel>
     </ContentContainer>
   );
