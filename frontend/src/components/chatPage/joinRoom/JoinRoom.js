@@ -20,7 +20,7 @@ const JoinRoom = (props) => {
 
   useEffect(() => {
     socket.emit("getUnjoinRooms", username);
-  }, []);
+  }, [username]);
 
   socket.on("roomCreated", () => {
     socket.emit("getUnjoinRooms", username);
