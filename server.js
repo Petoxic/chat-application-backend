@@ -102,6 +102,7 @@ io.on("connection", (socket) => {
   // leave room
   socket.on("leaveRoom", (room) => {
     const user = userLeaveRoom(socket.id, room);
+    console.log(socket.id, room);
     leaveRoom(user.username, room);
     if (user) {
       io.to(room).emit(
