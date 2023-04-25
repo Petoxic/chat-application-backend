@@ -84,7 +84,18 @@ const ChatHistory = (props) => {
         timestamp={message.time}
       />
     ))
-  )
+  );
+
+  const renderGroupMessageHistory = () => (
+    groupMessage.map((message, index) => (
+      <ChatHistoryPerUser 
+        name={message.room} 
+        key={index}
+        message={message.text}
+        timestamp={message.time}
+      />
+    ))
+  );
 
   return (
     <ContentContainer>
@@ -98,14 +109,7 @@ const ChatHistory = (props) => {
       </TabPanel>
       <TabPanel value={value} index={1}>
         {renderSearch()}
-        {groupMessage && groupMessage.map((message, index) => (
-          <ChatHistoryPerUser 
-            name={message.room} 
-            key={index}
-            message={message.text}
-            timestamp={message.time}
-          />
-        ))}
+        {groupMessage && renderGroupMessageHistory()}
       </TabPanel>
     </ContentContainer>
   );
