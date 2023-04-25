@@ -180,8 +180,11 @@ io.on("connection", (socket) => {
     io.emit("sendAllUsers", getAllUsers());
   });
 
-  socket.on("getAllUsers", () => {
-    io.emit("sendAllUsers", getAllUsers());
+  socket.on("searchRooms", (input) => {
+    const rooms = getUnjoinRooms(username);
+    const regex = new RegExp(input, "i");
+    const result = rooms.filter((room) => room.name.match(regex));
+    io.emit("searchResult", result);
   });
 
   // users disconnect from website
