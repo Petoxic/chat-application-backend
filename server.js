@@ -180,7 +180,7 @@ io.on("connection", (socket) => {
     io.emit("sendAllUsers", getAllUsers());
   });
 
-  socket.on("searchRooms", (input) => {
+  socket.on("searchRooms", (input, username) => {
     const rooms = getUnjoinRooms(username);
     const regex = new RegExp(input, "i");
     const result = rooms.filter((room) => room.name.match(regex));
