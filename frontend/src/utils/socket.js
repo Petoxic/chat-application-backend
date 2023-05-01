@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
-// const socket = io.connect("http://localhost:3001");
-const socket = io.connect("https://chat-server-network.herokuapp.com/");
+const socket = io.connect("http://172.20.10.8:3001/");
+// const socket = io.connect("https://chat-server-network.herokuapp.com/");
 
 export const joinChat = (username) => {
   socket.emit("joinChat", username);

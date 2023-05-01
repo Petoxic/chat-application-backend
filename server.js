@@ -35,7 +35,7 @@ const server = http.createServer(app);
 // const io = socketio(server);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
   },
 });
 
@@ -196,6 +196,6 @@ io.on("connection", (socket) => {
 
 const PORT = 3001 || process.env.PORT;
 
-server.listen(process.env.PORT || 3001, () => {
+server.listen(process.env.PORT || 3001, "0.0.0.0", () => {
   console.log(`server is running on port: ${PORT}`);
 });
