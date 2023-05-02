@@ -70,6 +70,7 @@ const NavBar = (props) => {
           directMessage={directMessage}
           groupMessage={groupMessage}
           changeRoom={changeRoom}
+          username={username}
         />
       </TabPanel>
       <TabPanel value={value} index={2}>

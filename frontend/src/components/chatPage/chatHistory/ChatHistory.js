@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import ChatHistoryPerUser from "./ChatHistoryPerUser";
-import InputBase from '@mui/material/InputBase';
-import IconButton from '@mui/material/IconButton';
+import InputBase from "@mui/material/InputBase";
+import IconButton from "@mui/material/IconButton";
 import { Box, Tab, Tabs } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from "@mui/icons-material/Search";
 import { Paper } from "@mui/material";
 
 const ChatHistory = (props) => {
-  const {groupMessage, directMessage, changeRoom} = props;
+  const { groupMessage, directMessage, changeRoom, username } = props;
   const [tabValue, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -20,29 +20,25 @@ const ChatHistory = (props) => {
 
   const TabPanel = (props) => {
     const { children, value, index, ...other } = props;
-  
+
     return (
       <div
         role="tabpanel"
         hidden={value !== index}
         id={`simple-tabpanel-${index}`}
         aria-labelledby={`simple-tab-${index}`}
-        style={{width: '100%'}}
+        style={{ width: "100%" }}
         {...other}
       >
-        {value === index && 
-          <Box>
-            {children}
-          </Box>
-        }
+        {value === index && <Box>{children}</Box>}
       </div>
     );
-  }
+  };
 
   function a11yProps(index) {
     return {
       id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
+      "aria-controls": `simple-tabpanel-${index}`,
     };
   }
 
@@ -52,49 +48,53 @@ const ChatHistory = (props) => {
         sx={{ ml: 1, flex: 1 }}
         placeholder="Search chat room or message"
       />
-      <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+      <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
         <SearchIcon />
       </IconButton>
     </InputWrapper>
-  )
+  );
 
   const handleChangeRoom = (event, title, isPrivate) => {
     event.preventDefault();
     changeRoom(title, isPrivate);
-    if(!isPrivate) {
+    if (!isPrivate) {
       handleChange(event, 1);
     }
   };
 
-  const renderDirectMessageHistory = () => (
+  const renderDirectMessageHistory = () =>
     directMessage.map((message, index) => (
       <ChatHistoryPerUser
         key={index}
         name={message.title}
         message={message.text}
         timestamp={message.time}
-        onClick={(e) => handleChangeRoom(e, message.sender, true)}
+        onClick={(e) =>
+          handleChangeRoom(
+            e,
+            username === message.sender ? message.receiver : message.sender,
+            true
+          )
+        }
       />
-    ))
-  );
+    ));
 
-  const renderGroupMessageHistory = () => (
+  const renderGroupMessageHistory = () =>
     groupMessage.map((message, index) => (
-      <ChatHistoryPerUser 
-        name={message.room} 
+      <ChatHistoryPerUser
+        name={message.room}
         key={index}
         message={message.text}
         timestamp={message.time}
         onClick={(e) => handleChangeRoom(e, message.room, false)}
       />
-    ))
-  );
+    ));
 
   return (
     <ContentContainer>
       <StyledTabs value={tabValue} onChange={handleChange}>
-        <Tab label="users"  {...a11yProps(0)}/>
-        <Tab label="groups"  {...a11yProps(1)}/>
+        <Tab label="users" {...a11yProps(0)} />
+        <Tab label="groups" {...a11yProps(1)} />
       </StyledTabs>
       <TabPanel value={tabValue} index={0}>
         {renderSearch()}
@@ -119,7 +119,7 @@ const ContentContainer = styled.div`
 
 const InputWrapper = styled(Paper)`
   display: flex;
-  padding: '2px 4px';
+  padding: "2px 4px";
   align-items: center;
   margin-bottom: 10px;
   width: 100%;
@@ -127,5 +127,5 @@ const InputWrapper = styled(Paper)`
 
 const StyledTabs = styled(Tabs)`
   display: flex;
-  justify-content : flex-start;
+  justify-content: flex-start;
 `;

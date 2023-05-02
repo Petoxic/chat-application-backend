@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-const socket = io.connect("http://172.20.10.8:3001/");
+const socket = io.connect("http://192.168.1.36:3001/");
 // const socket = io.connect("https://chat-server-network.herokuapp.com/");
 
 export const joinChat = (username) => {
